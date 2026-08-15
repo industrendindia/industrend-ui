@@ -43,8 +43,6 @@ function App() {
   return (
     <div className="site-shell">
       <a className="skip-link" href="#main">Skip to content</a>
-      <div className="announcement">Complimentary shipping across India on orders above ₹2,500 <span>•</span> Every purchase supports an artisan</div>
-
       <header className="header" aria-label="Main navigation">
         <button className="icon-btn menu-button" onClick={() => setMenuOpen(true)} aria-label="Open navigation"><Menu /></button>
         <button className="brand" onClick={() => goTo('home')} aria-label="Indus Trend home">
@@ -133,8 +131,8 @@ function App() {
       </main>
 
       <footer>
-        <div className="footer-main"><div className="footer-brand"><img src="/industrend-logo.jpg" alt="" /><div><strong>INDUS TREND</strong><p>Authentic Bharat lifestyle, thoughtfully curated for the world.</p></div></div><div><b>EXPLORE</b><button onClick={() => goTo('stores')}>Our stores</button><button onClick={() => goTo('products')}>Products</button><button onClick={() => goTo('about')}>Our story</button></div><div><b>SUPPORT</b><a href="mailto:hello@industrend.in">Contact us</a><button onClick={() => alert('Shipping information is coming soon.')}>Shipping</button><button onClick={() => alert('Returns information is coming soon.')}>Returns</button></div><div><b>CONNECT</b><a href="mailto:hello@industrend.in">hello@industrend.in</a><a href="#" aria-label="Instagram"><Camera /> Instagram</a></div></div>
-        <div className="footer-bottom"><span>© {new Date().getFullYear()} Indus Trend. All rights reserved.</span><span>Authentic • Ethical • Exceptional</span></div>
+        <div className="footer-main"><div className="footer-brand"><img src="/industrend-logo.jpg" alt="" /><div><strong>INDUS TREND</strong><p>Authentic Bharat lifestyle, thoughtfully curated for the world.</p></div></div><div><b>EXPLORE</b><button onClick={() => goTo('stores')}>Our stores</button><button onClick={() => goTo('products')}>Products</button><button onClick={() => goTo('about')}>Our story</button></div><div><b>SUPPORT</b><a href="mailto:industrendapp@gmail.com">Contact us</a><button onClick={() => alert('Shipping information is coming soon.')}>Shipping</button><button onClick={() => alert('Returns information is coming soon.')}>Returns</button></div><div><b>CONNECT</b><a href="mailto:industrendapp@gmail.com">industrendapp@gmail.com</a><a href="#" aria-label="Instagram"><Camera /> Instagram</a></div></div>
+        <div className="footer-bottom"><span>© {new Date().getFullYear()} Indus Trend. All rights reserved.</span><span>Powered by Repair Hub Billing Solution</span></div>
       </footer>
     </div>
   )
