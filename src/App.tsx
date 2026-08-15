@@ -71,7 +71,7 @@ function App() {
 
       <main id="main">
         <section className="hero" id="home">
-          <img className="hero-image" src="/hero-artisan.png" alt="Curated Indian painting, pottery, textile and brass craft" />
+          <img className="hero-image" src="/hero-artisan.webp" alt="Curated Indian painting, pottery, textile and brass craft" />
           <div className="hero-overlay" />
           <div className="hero-content">
             <div className="eyebrow"><span /> CURATED FROM THE HEART OF INDIA</div>
