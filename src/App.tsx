@@ -29,14 +29,38 @@ const products = [
   { name: 'Dhokra Forest Horse', maker: 'By Bastar Foundry', price: '₹6,750', tag: 'COLLECTOR EDITION', tone: 'brass' },
 ] as const
 
+declare global {
+  interface Window {
+    google?: { translate: { TranslateElement: new (options: object, elementId: string) => void } }
+    googleTranslateElementInit?: () => void
+  }
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [saved, setSaved] = useState<string[]>([])
+  const [selectedLanguage, setSelectedLanguage] = useState('en')
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [menuOpen])
+
+  useEffect(() => {
+    setSelectedLanguage(window.localStorage.getItem('indus-language') || 'en')
+    window.googleTranslateElementInit = () => {
+      if (!window.google || document.querySelector('#google_translate_element select')) return
+      new window.google.translate.TranslateElement({ pageLanguage: 'en', includedLanguages: indianLanguages.map(([code]) => code).filter((code) => code !== 'en').join(','), autoDisplay: false }, 'google_translate_element')
+    }
+    if (window.google?.translate) window.googleTranslateElementInit()
+    else if (!document.getElementById('google-translate-script')) {
+      const script = document.createElement('script')
+      script.id = 'google-translate-script'
+      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'
+      script.async = true
+      document.body.appendChild(script)
+    }
+  }, [])
 
   const goTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -48,9 +72,22 @@ function App() {
   }
 
   const changeLanguage = (language: string) => {
-    if (language === 'en') return
-    const target = encodeURIComponent(window.location.href)
-    window.location.href = `https://translate.google.com/translate?sl=en&tl=${encodeURIComponent(language)}&u=${target}`
+    setSelectedLanguage(language)
+    window.localStorage.setItem('indus-language', language)
+    if (language === 'en') {
+      document.cookie = 'googtrans=/en/en; path=/'
+      window.location.reload()
+      return
+    }
+    let attempts = 0
+    const applyTranslation = () => {
+      const translator = document.querySelector<HTMLSelectElement>('#google_translate_element select')
+      if (translator) {
+        translator.value = language
+        translator.dispatchEvent(new Event('change', { bubbles: true }))
+      } else if (attempts++ < 20) window.setTimeout(applyTranslation, 250)
+    }
+    applyTranslation()
   }
 
   return (
@@ -66,7 +103,7 @@ function App() {
           {navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}</button>)}
         </nav>
         <div className="header-actions">
-          <label className="language-picker" aria-label="Choose website language"><Globe2 /><span className="sr-only">Language</span><select defaultValue="en" onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select><ChevronDown /></label>
+          <label className="language-picker" aria-label="Choose website language"><Globe2 /><span className="sr-only">Language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select><ChevronDown /></label>
           <button className="login-link" onClick={() => alert('Login will be connected to the secure backend service soon.')}>Login</button>
           <button className="icon-btn search-btn" aria-label="Search"><Search /></button>
           <button className="bag-btn" aria-label="Shopping bag"><ShoppingBag /><span>0</span></button>
@@ -77,7 +114,7 @@ function App() {
         <button className="icon-btn drawer-close" onClick={() => setMenuOpen(false)} aria-label="Close navigation"><X /></button>
         <img src="/industrend-logo.jpg" alt="" />
         <nav>{navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}<ChevronRight /></button>)}</nav>
-        <label className="drawer-language"><Globe2 /><span>Website language</span><select defaultValue="en" onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>
+        <label className="drawer-language"><Globe2 /><span>Website language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>
         <button className="drawer-login" onClick={() => alert('Login will be connected soon.')}>Login to your account</button>
       </div>
       {menuOpen && <button className="drawer-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
@@ -155,6 +192,7 @@ function App() {
         <div className="footer-bottom"><span>© {new Date().getFullYear()} Indus Trend. All rights reserved.</span><span>Powered by Repair Hub Billing Solution</span></div>
       </footer>
       <a className="whatsapp-float" href="https://wa.me/919356419345?text=Hello%20Indus%20Trend%2C%20I%20would%20like%20to%20know%20more." target="_blank" rel="noreferrer" aria-label="Chat with Indus Trend on WhatsApp"><MessageCircle /><span>Chat with us</span></a>
+      <div id="google_translate_element" className="google-translate-engine" aria-hidden="true" />
     </div>
   )
 }

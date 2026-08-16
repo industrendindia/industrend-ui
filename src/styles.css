@@ -7,3 +7,4 @@
 @media(max-width:900px){.language-picker{display:none}.contact-section{grid-template-columns:1fr;padding:75px 7vw}.map-wrap{height:440px}.drawer-language{display:flex}}
 @media(max-width:600px){.contact-section{padding:70px 20px}.contact-copy h2{font-size:49px}.map-wrap{height:370px;border-width:7px}.map-wrap:before{inset:-7px}.map-wrap>a{right:12px;bottom:12px}.whatsapp-float{left:14px;bottom:14px;width:52px;height:52px;padding:0;justify-content:center}.whatsapp-float span{display:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+.google-translate-engine{position:fixed;left:-9999px;bottom:0;width:1px;height:1px;overflow:hidden}
