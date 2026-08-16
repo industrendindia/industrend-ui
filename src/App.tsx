@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight, Camera, ChevronRight, Heart, Mail, MapPin, Menu, Search, ShoppingBag, Sparkles, X } from 'lucide-react'
+import { ArrowRight, Camera, ChevronDown, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, MessageCircle, Phone, Search, ShoppingBag, Sparkles, X } from 'lucide-react'
 
 const navItems = [
   ['Home', 'home'],
   ['Stores', 'stores'],
   ['Our Products', 'products'],
   ['About Us', 'about'],
-  ['Contact', 'contact'],
+  ['Contact Us', 'contact'],
+] as const
+
+const indianLanguages = [
+  ['en', 'English'], ['as', 'অসমীয়া'], ['bn', 'বাংলা'], ['brx', 'बड़ो'], ['doi', 'डोगरी'],
+  ['gu', 'ગુજરાતી'], ['hi', 'हिन्दी'], ['kn', 'ಕನ್ನಡ'], ['ks', 'کٲشُر'], ['kok', 'कोंकणी'], ['mai', 'मैथिली'],
+  ['ml', 'മലയാളം'], ['mni-Mtei', 'ꯃꯤꯇꯩꯂꯣꯂ'], ['mr', 'मराठी'], ['ne', 'नेपाली'], ['or', 'ଓଡ଼ିଆ'], ['pa', 'ਪੰਜਾਬੀ'],
+  ['sa', 'संस्कृतम्'], ['sat', 'ᱥᱟᱱᱛᱟᱲᱤ'], ['sd', 'سنڌي'], ['ta', 'தமிழ்'], ['te', 'తెలుగు'], ['ur', 'اردو'],
 ] as const
 
 const stores = [
@@ -40,6 +47,12 @@ function App() {
     setSaved((items) => items.includes(name) ? items.filter((item) => item !== name) : [...items, name])
   }
 
+  const changeLanguage = (language: string) => {
+    if (language === 'en') return
+    const target = encodeURIComponent(window.location.href)
+    window.location.href = `https://translate.google.com/translate?sl=en&tl=${encodeURIComponent(language)}&u=${target}`
+  }
+
   return (
     <div className="site-shell">
       <a className="skip-link" href="#main">Skip to content</a>
@@ -53,6 +66,7 @@ function App() {
           {navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}</button>)}
         </nav>
         <div className="header-actions">
+          <label className="language-picker" aria-label="Choose website language"><Globe2 /><span className="sr-only">Language</span><select defaultValue="en" onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select><ChevronDown /></label>
           <button className="login-link" onClick={() => alert('Login will be connected to the secure backend service soon.')}>Login</button>
           <button className="icon-btn search-btn" aria-label="Search"><Search /></button>
           <button className="bag-btn" aria-label="Shopping bag"><ShoppingBag /><span>0</span></button>
@@ -63,6 +77,7 @@ function App() {
         <button className="icon-btn drawer-close" onClick={() => setMenuOpen(false)} aria-label="Close navigation"><X /></button>
         <img src="/industrend-logo.jpg" alt="" />
         <nav>{navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}<ChevronRight /></button>)}</nav>
+        <label className="drawer-language"><Globe2 /><span>Website language</span><select defaultValue="en" onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>
         <button className="drawer-login" onClick={() => alert('Login will be connected soon.')}>Login to your account</button>
       </div>
       {menuOpen && <button className="drawer-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
@@ -123,10 +138,15 @@ function App() {
           <div className="story-copy"><span className="kicker">OUR NORTH STAR</span><h2>Not just made in India.<br /><em>Made of India.</em></h2><p>Indus Trend is a bridge between exceptional Indian makers and people around the world who value what is real, rare and responsibly made.</p><p>We seek out work with a distinct voice—objects rooted in place, carried by tradition, and alive with the character of the hands that shaped them.</p><button className="text-btn light" onClick={() => alert('Our complete story is coming soon.')}>Read our story <ArrowRight /></button></div>
         </section>
 
-        <section className="newsletter" id="contact">
-          <span className="kicker">LET THE RARE FIND YOU</span><h2>Stories, makers and first looks—<br /><em>sent thoughtfully.</em></h2>
-          <form onSubmit={(event) => { event.preventDefault(); alert('Thank you. You’re on the list!') }}><label className="sr-only" htmlFor="email">Email address</label><Mail /><input id="email" type="email" required placeholder="Your email address" /><button type="submit">Join the circle <ArrowRight /></button></form>
-          <p>No noise. Just beautiful things worth knowing.</p>
+        <section className="contact-section" id="contact">
+          <div className="contact-copy"><span className="kicker">WE’D LOVE TO HEAR FROM YOU</span><h2>Contact <em>Us.</em></h2><p>Questions about a piece, a maker, or your order? Our team is here to help.</p>
+            <address>
+              <a href="https://www.google.com/maps/search/?api=1&query=Leon+Orbit+B+Wing+Kokane+Chowk+Rahatani+Pune+411017" target="_blank" rel="noreferrer"><span><MapPin /></span><div><b>Visit our studio</b><small>Leon Orbit, B Wing, Kokane Chowk,<br />Rahatani, Pune – 411017</small></div><ArrowRight /></a>
+              <a href="tel:+919356419345"><span><Phone /></span><div><b>Call or WhatsApp</b><small>+91 93564 19345</small></div><ArrowRight /></a>
+              <a href="mailto:industrendapp@gmail.com"><span><Mail /></span><div><b>Email us</b><small>industrendapp@gmail.com</small></div><ArrowRight /></a>
+            </address>
+          </div>
+          <div className="map-wrap"><iframe title="Indus Trend location at Leon Orbit, Rahatani, Pune" src="https://www.google.com/maps?q=Leon%20Orbit%20B%20Wing%20Kokane%20Chowk%20Rahatani%20Pune%20411017&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" /><a href="https://www.google.com/maps/dir/?api=1&destination=Leon+Orbit+B+Wing+Kokane+Chowk+Rahatani+Pune+411017" target="_blank" rel="noreferrer">Get directions <ArrowRight /></a></div>
         </section>
       </main>
 
@@ -134,6 +154,7 @@ function App() {
         <div className="footer-main"><div className="footer-brand"><img src="/industrend-logo.jpg" alt="" /><div><strong>INDUS TREND</strong><p>Authentic Bharat lifestyle, thoughtfully curated for the world.</p></div></div><div><b>EXPLORE</b><button onClick={() => goTo('stores')}>Our stores</button><button onClick={() => goTo('products')}>Products</button><button onClick={() => goTo('about')}>Our story</button></div><div><b>SUPPORT</b><a href="mailto:industrendapp@gmail.com">Contact us</a><button onClick={() => alert('Shipping information is coming soon.')}>Shipping</button><button onClick={() => alert('Returns information is coming soon.')}>Returns</button></div><div><b>CONNECT</b><a href="mailto:industrendapp@gmail.com">industrendapp@gmail.com</a><a href="#" aria-label="Instagram"><Camera /> Instagram</a></div></div>
         <div className="footer-bottom"><span>© {new Date().getFullYear()} Indus Trend. All rights reserved.</span><span>Powered by Repair Hub Billing Solution</span></div>
       </footer>
+      <a className="whatsapp-float" href="https://wa.me/919356419345?text=Hello%20Indus%20Trend%2C%20I%20would%20like%20to%20know%20more." target="_blank" rel="noreferrer" aria-label="Chat with Indus Trend on WhatsApp"><MessageCircle /><span>Chat with us</span></a>
     </div>
   )
 }
