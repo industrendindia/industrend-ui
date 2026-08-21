@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight, Camera, ChevronDown, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, MessageCircle, Phone, Search, ShoppingBag, Sparkles, X } from 'lucide-react'
+import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Phone, Search, ShoppingBag, X } from 'lucide-react'
+import { FaWhatsapp } from 'react-icons/fa'
 
 const navItems = [
   ['Home', 'home'],
@@ -29,6 +30,12 @@ const products = [
   { name: 'Dhokra Forest Horse', maker: 'By Bastar Foundry', price: '₹6,750', tag: 'COLLECTOR EDITION', tone: 'brass' },
 ] as const
 
+const heroSlides = [
+  { src: '/hero-marble-craft.jpeg', alt: 'Hand-carved marble decor crafted in India' },
+  { src: '/hero-wood-craft.jpeg', alt: 'A collection of richly carved Indian wooden craft' },
+  { src: '/hero-painting-craft.jpeg', alt: 'Indian artists creating intricate floral paintings by hand' },
+] as const
+
 declare global {
   interface Window {
     google?: { translate: { TranslateElement: new (options: object, elementId: string) => void } }
@@ -40,6 +47,8 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [saved, setSaved] = useState<string[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState('en')
+  const [activeHero, setActiveHero] = useState(0)
+  const [heroPaused, setHeroPaused] = useState(false)
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -61,6 +70,12 @@ function App() {
       document.body.appendChild(script)
     }
   }, [])
+
+  useEffect(() => {
+    if (heroPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const timer = window.setInterval(() => setActiveHero((slide) => (slide + 1) % heroSlides.length), 5500)
+    return () => window.clearInterval(timer)
+  }, [heroPaused])
 
   const goTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -120,19 +135,19 @@ function App() {
       {menuOpen && <button className="drawer-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
 
       <main id="main">
-        <section className="hero" id="home">
-          <img className="hero-image" src="/hero-artisan.webp" alt="Curated Indian painting, pottery, textile and brass craft" />
+        <section className="hero hero-slider" id="home" aria-roledescription="carousel" aria-label="Featured Indian craftsmanship" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)} onFocus={() => setHeroPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false) }}>
+          <div className="hero-slides">
+            {heroSlides.map((slide, index) => <img key={slide.src} className={`hero-image ${index === activeHero ? 'active' : ''}`} src={slide.src} alt={index === activeHero ? slide.alt : ''} aria-hidden={index !== activeHero} />)}
+          </div>
           <div className="hero-overlay" />
           <div className="hero-content">
-            <div className="eyebrow"><span /> CURATED FROM THE HEART OF INDIA</div>
             <h1>Rare craft.<br /><em>Remarkable stories.</em></h1>
-            <p>Discover pieces you won’t find everywhere—made slowly, held dearly, and shared with you by India’s most devoted makers.</p>
-            <div className="hero-ctas">
-              <button className="primary-btn" onClick={() => goTo('products')}>Explore the collection <ArrowRight /></button>
-              <button className="text-btn light" onClick={() => goTo('stores')}>Meet our makers <span>↗</span></button>
-            </div>
           </div>
-          <div className="hero-note"><Sparkles /><span><b>Crafted, not manufactured</b><small>Every piece carries the hand of its maker</small></span></div>
+          <div className="hero-controls">
+            <button onClick={() => setActiveHero((activeHero - 1 + heroSlides.length) % heroSlides.length)} aria-label="Previous image"><ChevronLeft /></button>
+            <div className="hero-dots">{heroSlides.map((_, index) => <button key={index} className={index === activeHero ? 'active' : ''} onClick={() => setActiveHero(index)} aria-label={`Show image ${index + 1}`} aria-current={index === activeHero ? 'true' : undefined} />)}</div>
+            <button onClick={() => setActiveHero((activeHero + 1) % heroSlides.length)} aria-label="Next image"><ChevronRight /></button>
+          </div>
         </section>
 
         <section className="trust-strip" aria-label="Our promises">
@@ -191,7 +206,7 @@ function App() {
         <div className="footer-main"><div className="footer-brand"><img src="/industrend-logo.jpg" alt="" /><div><strong>INDUS TREND</strong><p>Authentic Bharat lifestyle, thoughtfully curated for the world.</p></div></div><div><b>EXPLORE</b><button onClick={() => goTo('stores')}>Our stores</button><button onClick={() => goTo('products')}>Products</button><button onClick={() => goTo('about')}>Our story</button></div><div><b>SUPPORT</b><a href="mailto:industrendapp@gmail.com">Contact us</a><button onClick={() => alert('Shipping information is coming soon.')}>Shipping</button><button onClick={() => alert('Returns information is coming soon.')}>Returns</button></div><div><b>CONNECT</b><a href="mailto:industrendapp@gmail.com">industrendapp@gmail.com</a><a href="#" aria-label="Instagram"><Camera /> Instagram</a></div></div>
         <div className="footer-bottom"><span>© {new Date().getFullYear()} Indus Trend. All rights reserved.</span><span>Powered by Repair Hub Billing Solution</span></div>
       </footer>
-      <a className="whatsapp-float" href="https://wa.me/919356419345?text=Hello%20Indus%20Trend%2C%20I%20would%20like%20to%20know%20more." target="_blank" rel="noreferrer" aria-label="Chat with Indus Trend on WhatsApp"><MessageCircle /><span>Chat with us</span></a>
+      <a className="whatsapp-float" href="https://wa.me/919356419345?text=Hello%20Indus%20Trend%2C%20I%20would%20like%20to%20know%20more." target="_blank" rel="noreferrer" aria-label="Contact Indus Trend on WhatsApp"><FaWhatsapp /><span>WhatsApp</span></a>
       <div id="google_translate_element" className="google-translate-engine" aria-hidden="true" />
     </div>
   )
