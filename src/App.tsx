@@ -165,7 +165,10 @@ function App() {
           <div className="store-grid">
             {stores.map((store, index) => (
               <article className="store-card" key={store.name}>
-                <div className={`store-art ${store.image}`}><span className="store-number">0{index + 1}</span><div className="craft-object" /></div>
+                <div className={`store-art ${store.image}`}>
+                  {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Traditional Indian decorative art featuring Buddha, textiles, lamps and musical instruments" />}
+                  <span className="store-number">0{index + 1}</span><div className="craft-object" />
+                </div>
                 <div className="store-meta"><div><span>{store.craft}</span><h3>{store.name}</h3><p><MapPin /> {store.place}</p></div><button aria-label={`View ${store.name}`}><ArrowRight /></button></div>
               </article>
             ))}
