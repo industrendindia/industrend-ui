@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Phone, Search, ShoppingBag, X } from 'lucide-react'
 import { FaWhatsapp } from 'react-icons/fa'
+import Storefront from './Storefront'
+import './storefront.css'
 
 const navItems = [
   ['Home', 'home'],
@@ -49,6 +51,11 @@ function App() {
   const [selectedLanguage, setSelectedLanguage] = useState('en')
   const [activeHero, setActiveHero] = useState(0)
   const [heroPaused, setHeroPaused] = useState(false)
+  const [activeStore, setActiveStore] = useState<number | null>(() => {
+    const match = window.location.hash.match(/^#store\/(\d+)$/)
+    return match ? Number(match[1]) : null
+  })
+  const [cartCount, setCartCount] = useState(0)
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -77,10 +84,26 @@ function App() {
     return () => window.clearInterval(timer)
   }, [heroPaused])
 
+  useEffect(() => {
+    const syncStoreRoute = () => {
+      const match = window.location.hash.match(/^#store\/(\d+)$/)
+      setActiveStore(match ? Number(match[1]) : null)
+      window.scrollTo({ top: 0 })
+    }
+    window.addEventListener('hashchange', syncStoreRoute)
+    return () => window.removeEventListener('hashchange', syncStoreRoute)
+  }, [])
+
   const goTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    if (activeStore !== null) {
+      window.location.hash = ''
+      window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 0)
+    } else document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
     setMenuOpen(false)
   }
+
+  const openStore = (index: number) => { window.location.hash = `store/${index}` }
+  const closeStore = () => { window.location.hash = ''; window.setTimeout(() => document.getElementById('stores')?.scrollIntoView(), 0) }
 
   const toggleSaved = (name: string) => {
     setSaved((items) => items.includes(name) ? items.filter((item) => item !== name) : [...items, name])
@@ -121,7 +144,7 @@ function App() {
           <label className="language-picker" aria-label="Choose website language"><Globe2 /><span className="sr-only">Language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select><ChevronDown /></label>
           <button className="login-link" onClick={() => alert('Login will be connected to the secure backend service soon.')}>Login</button>
           <button className="icon-btn search-btn" aria-label="Search"><Search /></button>
-          <button className="bag-btn" aria-label="Shopping bag"><ShoppingBag /><span>0</span></button>
+          <button className="bag-btn" aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag /><span>{cartCount}</span></button>
         </div>
       </header>
 
@@ -134,7 +157,7 @@ function App() {
       </div>
       {menuOpen && <button className="drawer-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
 
-      <main id="main">
+      {activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={() => setCartCount((count) => count + 1)} /> : <main id="main">
         <section className="hero hero-slider" id="home" aria-roledescription="carousel" aria-label="Featured Indian craftsmanship" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)} onFocus={() => setHeroPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false) }}>
           <div className="hero-slides">
             {heroSlides.map((slide, index) => <img key={slide.src} className={`hero-image ${index === activeHero ? 'active' : ''}`} src={slide.src} alt={index === activeHero ? slide.alt : ''} aria-hidden={index !== activeHero} />)}
@@ -169,7 +192,7 @@ function App() {
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Traditional Indian decorative art featuring Buddha, textiles, lamps and musical instruments" />}
                   <span className="store-number">0{index + 1}</span><div className="craft-object" />
                 </div>
-                <div className="store-meta"><div><span>{store.craft}</span><h3>{store.name}</h3><p><MapPin /> {store.place}</p></div><button aria-label={`View ${store.name}`}><ArrowRight /></button></div>
+                <div className="store-meta"><div><span>{store.craft}</span><h3>{store.name}</h3><p><MapPin /> {store.place}</p></div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
               </article>
             ))}
           </div>
@@ -203,7 +226,7 @@ function App() {
           </div>
           <div className="map-wrap"><iframe title="Indus Trend location at Leon Orbit, Rahatani, Pune" src="https://www.google.com/maps?q=Leon%20Orbit%20B%20Wing%20Kokane%20Chowk%20Rahatani%20Pune%20411017&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" /><a href="https://www.google.com/maps/dir/?api=1&destination=Leon+Orbit+B+Wing+Kokane+Chowk+Rahatani+Pune+411017" target="_blank" rel="noreferrer">Get directions <ArrowRight /></a></div>
         </section>
-      </main>
+      </main>}
 
       <footer>
         <div className="footer-main"><div className="footer-brand"><img src="/industrend-logo.jpg" alt="" /><div><strong>INDUS TREND</strong><p>Authentic Bharat lifestyle, thoughtfully curated for the world.</p></div></div><div><b>EXPLORE</b><button onClick={() => goTo('stores')}>Our stores</button><button onClick={() => goTo('products')}>Products</button><button onClick={() => goTo('about')}>Our story</button></div><div><b>SUPPORT</b><a href="mailto:industrendapp@gmail.com">Contact us</a><button onClick={() => alert('Shipping information is coming soon.')}>Shipping</button><button onClick={() => alert('Returns information is coming soon.')}>Returns</button></div><div><b>CONNECT</b><a href="mailto:industrendapp@gmail.com">industrendapp@gmail.com</a><a href="#" aria-label="Instagram"><Camera /> Instagram</a></div></div>

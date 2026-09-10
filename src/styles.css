@@ -29,3 +29,5 @@
 @media(prefers-reduced-motion:reduce){.hero-slider .hero-image{transition:none;transform:none}.hero-dots button{transition:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 .google-translate-engine{position:fixed;left:-9999px;bottom:0;width:1px;height:1px;overflow:hidden}
+
+.store-meta .store-visit{width:auto;height:auto;border-radius:0;padding:11px 13px;display:flex;align-items:center;gap:8px;color:var(--green);font-size:10px;font-weight:700;text-transform:uppercase;white-space:nowrap}.store-meta .store-visit:hover{background:var(--green);color:white}
