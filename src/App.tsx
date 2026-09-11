@@ -22,7 +22,6 @@ const indianLanguages = [
 const stores = [
   { name: 'Pichwai Parampara', place: 'Nathdwara, Rajasthan', craft: 'Heritage Paintings', image: 'store-pichwai' },
   { name: 'Mitti & More', place: 'Kutch, Gujarat', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
-  { name: 'The Loom Story', place: 'Varanasi, Uttar Pradesh', craft: 'Handwoven Textiles', image: 'store-textile' },
 ] as const
 
 const products = [
@@ -189,7 +188,7 @@ function App() {
             {stores.map((store, index) => (
               <article className="store-card" key={store.name}>
                 <div className={`store-art ${store.image}`}>
-                  {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Traditional Indian decorative art featuring Buddha, textiles, lamps and musical instruments" />}
+                  {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Pichwai Parampara artisan standing beside a hand-painted Buddha relief artwork" />}
                   <span className="store-number">0{index + 1}</span><div className="craft-object" />
                 </div>
                 <div className="store-meta"><div><span>{store.craft}</span><h3>{store.name}</h3><p><MapPin /> {store.place}</p></div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
