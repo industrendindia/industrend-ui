@@ -9,21 +9,22 @@ type StorefrontProps = {
 
 const storefronts = [
   {
-    name: 'Pichwai Parampara', location: 'Nathdwara, Rajasthan', craft: 'Heritage Paintings',
+    name: 'Rahul Sawant', location: 'Nathdwara, Rajasthan', craft: 'Paintings • Idols • Name Plates • Wall Art',
     hero: '/store-01-artist.jpeg',
     intro: 'Contemporary relief art shaped by Indian devotion, nature and the quiet discipline of handwork.',
     categories: [
-      { name: 'Buddha Reliefs', image: '/store-01.jpeg', position: '50% 44%' },
-      { name: 'Statement Art', image: '/store-01-artist.jpeg', position: '35% 45%' },
-      { name: 'Festive Gifting', image: '/store-01.jpeg', position: '72% 72%' },
+      { name: 'Paintings', image: '/store-01-artist.jpeg', position: '35% 45%' },
+      { name: 'Idols', image: '/store-01.jpeg', position: '50% 44%' },
+      { name: 'Name Plates', image: '/store-01.jpeg', position: '72% 72%' },
+      { name: 'Wall Art', image: '/store-01-artist.jpeg', position: '20% 45%' },
     ],
     products: [
-      { name: 'Bodhi Leaf Buddha Relief', category: 'Buddha Reliefs', price: '₹18,500', image: '/store-01.jpeg', position: '50% 46%', favourite: true },
-      { name: 'Emerald Serenity Panel', category: 'Statement Art', price: '₹21,900', image: '/store-01-artist.jpeg', position: '30% 42%', favourite: true },
-      { name: 'Sacred Grove Wall Art', category: 'Buddha Reliefs', price: '₹14,800', image: '/store-01.jpeg', position: '54% 52%', favourite: false },
-      { name: 'Nathdwara Celebration Edit', category: 'Festive Gifting', price: '₹9,750', image: '/store-01.jpeg', position: '82% 78%', favourite: true },
-      { name: 'Meditation Corner Artwork', category: 'Statement Art', price: '₹16,200', image: '/store-01-artist.jpeg', position: '19% 43%', favourite: false },
-      { name: 'Heritage Lamp & Art Set', category: 'Festive Gifting', price: '₹12,400', image: '/store-01.jpeg', position: '13% 74%', favourite: false },
+      { name: 'Bodhi Leaf Buddha Relief', category: 'Idols', price: '₹18,500', image: '/store-01.jpeg', position: '50% 46%', favourite: true },
+      { name: 'Emerald Serenity Panel', category: 'Paintings', price: '₹21,900', image: '/store-01-artist.jpeg', position: '30% 42%', favourite: true },
+      { name: 'Sacred Grove Wall Art', category: 'Wall Art', price: '₹14,800', image: '/store-01.jpeg', position: '54% 52%', favourite: false },
+      { name: 'Nathdwara Family Name Plate', category: 'Name Plates', price: '₹9,750', image: '/store-01.jpeg', position: '82% 78%', favourite: true },
+      { name: 'Meditation Corner Artwork', category: 'Paintings', price: '₹16,200', image: '/store-01-artist.jpeg', position: '19% 43%', favourite: false },
+      { name: 'Heritage Buddha Idol', category: 'Idols', price: '₹12,400', image: '/store-01.jpeg', position: '13% 74%', favourite: false },
     ],
   },
   {

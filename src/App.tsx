@@ -20,12 +20,12 @@ const indianLanguages = [
 ] as const
 
 const stores = [
-  { name: 'Pichwai Parampara', place: 'Nathdwara, Rajasthan', craft: 'Heritage Paintings', image: 'store-pichwai' },
+  { name: 'Rahul Sawant', place: 'Nathdwara, Rajasthan', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
   { name: 'Mitti & More', place: 'Kutch, Gujarat', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
 ] as const
 
 const products = [
-  { name: 'The Monsoon Pichwai', maker: 'By Pichwai Parampara', price: '₹18,500', tag: 'ONE OF ONE', tone: 'painting' },
+  { name: 'The Monsoon Pichwai', maker: 'By Rahul Sawant', price: '₹18,500', tag: 'ONE OF ONE', tone: 'painting' },
   { name: 'Kutch Earth Vase', maker: 'By Mitti & More', price: '₹2,850', tag: 'SMALL BATCH', tone: 'vase' },
   { name: 'Banarasi Table Runner', maker: 'By The Loom Story', price: '₹4,200', tag: 'HANDWOVEN', tone: 'textile' },
   { name: 'Dhokra Forest Horse', maker: 'By Bastar Foundry', price: '₹6,750', tag: 'COLLECTOR EDITION', tone: 'brass' },
@@ -188,10 +188,10 @@ function App() {
             {stores.map((store, index) => (
               <article className="store-card" key={store.name}>
                 <div className={`store-art ${store.image}`}>
-                  {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Pichwai Parampara artisan standing beside a hand-painted Buddha relief artwork" />}
+                  {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
                   <span className="store-number">0{index + 1}</span><div className="craft-object" />
                 </div>
-                <div className="store-meta"><div><span>{store.craft}</span><h3>{store.name}</h3><p><MapPin /> {store.place}</p></div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
+                <div className="store-meta"><div><h3>{store.name}</h3><p className="store-categories">{store.craft}</p><p><MapPin /> {store.place}</p></div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
               </article>
             ))}
           </div>
