@@ -20,7 +20,7 @@ const indianLanguages = [
 ] as const
 
 const stores = [
-  { name: 'Rahul Sawant', place: 'Nathdwara, Rajasthan', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
+  { name: 'Rahul Sawant', place: '', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
   { name: 'Mitti & More', place: 'Kutch, Gujarat', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
 ] as const
 
@@ -191,7 +191,7 @@ function App() {
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
                   <span className="store-number">0{index + 1}</span><div className="craft-object" />
                 </div>
-                <div className="store-meta"><div><h3>{store.name}</h3><p className="store-categories">{store.craft}</p><p><MapPin /> {store.place}</p></div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
+                <div className="store-meta"><div><h3>{store.name}</h3><p className="store-categories">{store.craft}</p>{store.place && <p><MapPin /> {store.place}</p>}</div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
               </article>
             ))}
           </div>

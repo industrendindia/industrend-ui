@@ -9,7 +9,7 @@ type StorefrontProps = {
 
 const storefronts = [
   {
-    name: 'Rahul Sawant', location: 'Nathdwara, Rajasthan', craft: 'Paintings • Idols • Name Plates • Wall Art',
+    name: 'Rahul Sawant', location: '', craft: 'Paintings • Idols • Name Plates • Wall Art',
     hero: '/store-01-artist.jpeg',
     intro: 'Contemporary relief art shaped by Indian devotion, nature and the quiet discipline of handwork.',
     categories: [
@@ -78,7 +78,7 @@ export default function Storefront({ storeIndex, onBack, onAddToCart }: Storefro
         <div className="storefront-hero-copy">
           <span className="storefront-kicker"><Sparkles /> Featured artisan store</span>
           <h1>{store.name}</h1>
-          <p className="storefront-location"><MapPin /> {store.location} · {store.craft}</p>
+          <p className="storefront-location">{store.location && <><MapPin /> {store.location} · </>}{store.craft}</p>
           <p>{store.intro}</p>
           <button onClick={scrollToCollection}>Shop the collection <ArrowRight /></button>
         </div>
