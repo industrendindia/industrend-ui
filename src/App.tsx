@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Minus, Phone, Plus, ShoppingBag, X } from 'lucide-react'
+import { useEffect, useState, type FormEvent } from 'react'
+import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Minus, Package, Phone, Plus, Search, ShoppingBag, X } from 'lucide-react'
 import { FaWhatsapp } from 'react-icons/fa'
 import Storefront from './Storefront'
 import './storefront.css'
@@ -57,6 +57,7 @@ function App() {
     return match ? Number(match[1]) : null
   })
   const [cartOpen, setCartOpen] = useState(false)
+  const [headerSearch, setHeaderSearch] = useState("")
   const [cartItems, setCartItems] = useState<{ name: string; price: number; image: string; qty: number }[]>([])
   const cartCount = cartItems.reduce((total, item) => total + item.qty, 0)
 
@@ -129,24 +130,38 @@ function App() {
     window.location.reload()
   }
 
+  const submitHeaderSearch = (event: FormEvent) => {
+    event.preventDefault()
+    const query = headerSearch.trim().toLowerCase()
+    if (!query) return
+    const storeMatch = stores.some((store) => `${store.name} ${store.craft}`.toLowerCase().includes(query))
+    goTo(storeMatch || query.includes('store') || query.includes('craft') ? 'stores' : 'products')
+  }
   return (
     <div className="site-shell">
       <a className="skip-link" href="#main">Skip to content</a>
       <header className="header" aria-label="Main navigation">
+        <div className="prototype-note">Authentic Indian craft, thoughtfully curated from independent makers.</div>
         <div className="header-top">
           <button className="icon-btn menu-button" onClick={() => setMenuOpen(true)} aria-label="Open navigation"><Menu /></button>
           <button className="brand" onClick={() => goTo('home')} aria-label="Indus Trend home">
             <img src="/industrend-logo.jpg" alt="Indus Trend" />
             <span className="brand-copy"><strong>INDUS TREND</strong><small>SHOP THE SPIRIT OF INDIA.</small></span>
           </button>
-          <div className="header-actions">
-            <label className="language-picker" aria-label="Choose website language"><Globe2 /><span className="sr-only">Language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select><ChevronDown /></label>
+          <form className="header-search" role="search" onSubmit={submitHeaderSearch}>
+            <Search aria-hidden="true" />
+            <input value={headerSearch} onChange={(event) => setHeaderSearch(event.target.value)} placeholder="Search products, stores, crafts..." aria-label="Search products, stores and crafts" />
+            <button type="submit">Search</button>
+          </form>          <div className="header-actions">
+            <button className="header-utility" onClick={() => goTo("products")}><Heart />Wishlist</button>
+            <button className="header-utility" onClick={() => alert("Your orders will appear here after checkout.")}><Package />My Orders</button>
             <button className="bag-btn" onClick={() => setCartOpen(true)} aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag /><span className="bag-label">Cart</span><b>{cartCount}</b></button>
             <button className="login-link" onClick={() => alert('Login will be connected to the secure backend service soon.')}>Login</button>
           </div>
         </div>
         <nav className="desktop-nav">
-          {navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}</button>)}
+          <div className="nav-inner">{navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}</button>)}</div>
+          <label className="language-picker" aria-label="Choose website language"><Globe2 /><span className="sr-only">Language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select><ChevronDown /></label>
         </nav>
       </header>
 
