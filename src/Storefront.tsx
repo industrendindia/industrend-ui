@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ArrowLeft, ChevronDown, Heart, Minus, Plus, Search, ShieldCheck, ShoppingBag, Sparkles } from 'lucide-react'
 
-type StorefrontProps = { storeIndex: number; onBack: () => void; onAddToCart: () => void }
+type StorefrontProps = { storeIndex: number; onBack: () => void; onAddToCart: (product: { name: string; price: number; image: string }) => void }
 type Product = { id: string; name: string; category: string; price: number; mrp: number; rating: number; reviews: number; stock: number; image: string; material: string; size: string; dispatch: string; description: string }
 
 const product = (id: string, name: string, category: string, price: number, mrp: number, rating: number, reviews: number, stock: number, material = 'Decorative handcrafted art', size = 'Display size — exact dimensions confirmed before dispatch'): Product => ({
@@ -50,7 +50,7 @@ export default function Storefront({ storeIndex, onBack, onAddToCart }: Storefro
 
   const chooseCategory = (next: string) => { setCategory(next); setProductSearch('') }
   const openProduct = (item: Product) => { setSelected(item); setQuantity(1); window.scrollTo({ top: 0, behavior: 'smooth' }) }
-  const add = () => onAddToCart()
+  const add = (item: Product) => onAddToCart({ name: item.name, price: item.price, image: item.image })
 
   if (selected) return (
     <main className="product-detail-page" id="main">
@@ -66,7 +66,7 @@ export default function Storefront({ storeIndex, onBack, onAddToCart }: Storefro
           <div className="detail-facts"><div><b>Material</b><span>{selected.material}</span></div><div><b>Size</b><span>{selected.size}</span></div><div><b>Dispatch</b><span>{selected.dispatch}</span></div><div><b>Returns</b><span>7-day return on eligible condition</span></div></div>
           <small>Made / curated in Pune, Maharashtra · {selected.stock} units available</small>
           <div className="quantity-row"><b>Quantity</b><div><button onClick={() => setQuantity((value) => Math.max(1, value - 1))}><Minus /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(selected.stock, value + 1))}><Plus /></button></div><small>{selected.stock} in stock</small></div>
-          <div className="detail-actions"><button onClick={add}>Add to Cart</button><button onClick={add}>Buy Now</button></div>
+          <div className="detail-actions"><button onClick={() => add(selected)}>Add to Cart</button><button onClick={() => add(selected)}>Buy Now</button></div>
           <div className="detail-seller">Sold by <b>{storeName}</b> · Verified seller on Indus Trend</div>
         </section>
       </div>
@@ -102,7 +102,7 @@ export default function Storefront({ storeIndex, onBack, onAddToCart }: Storefro
             <div className="catalogue-grid">
               {visibleProducts.map((item) => <article className="catalogue-card" key={item.id}>
                 <div className="catalogue-card-media"><img src={item.image} alt={item.name} /><span>{item.category}</span><button className={saved.includes(item.id) ? 'saved' : ''} onClick={() => setSaved((current) => current.includes(item.id) ? current.filter((id) => id !== item.id) : [...current, item.id])} aria-label={`Save ${item.name}`}><Heart fill={saved.includes(item.id) ? 'currentColor' : 'none'} /></button></div>
-                <div className="catalogue-card-body"><small>{storeName}</small><h3>{item.name}</h3><div className="catalogue-rating"><span>★★★★★</span> {item.rating} ({item.reviews})</div><div className="catalogue-price"><strong>{money(item.price)}</strong><del>{money(item.mrp)}</del></div><p>In stock · Dispatch {item.dispatch}</p><div className="catalogue-card-actions"><button onClick={add}>Add to Cart</button><button onClick={() => openProduct(item)} aria-label={`View ${item.name} details`}><Search /></button></div></div>
+                <div className="catalogue-card-body"><small>{storeName}</small><h3>{item.name}</h3><div className="catalogue-rating"><span>★★★★★</span> {item.rating} ({item.reviews})</div><div className="catalogue-price"><strong>{money(item.price)}</strong><del>{money(item.mrp)}</del></div><p>In stock · Dispatch {item.dispatch}</p><div className="catalogue-card-actions"><button onClick={() => add(item)}>Add to Cart</button><button onClick={() => openProduct(item)} aria-label={`View ${item.name} details`}><Search /></button></div></div>
               </article>)}
               {!visibleProducts.length && <div className="catalogue-empty"><Search /><h3>No products found</h3><p>Try another category or clear your search.</p><button onClick={() => { setCategory('All Products'); setProductSearch('') }}>Show all products</button></div>}
             </div>

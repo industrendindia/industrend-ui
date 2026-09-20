@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Phone, Search, ShoppingBag, X } from 'lucide-react'
+import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Minus, Phone, Plus, ShoppingBag, X } from 'lucide-react'
 import { FaWhatsapp } from 'react-icons/fa'
 import Storefront from './Storefront'
 import './storefront.css'
@@ -22,6 +22,8 @@ const indianLanguages = [
 const stores = [
   { name: 'Rahul Sawant', place: '', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
   { name: 'Mitti & More', place: 'Kutch, Gujarat', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
+  { name: 'Silk Sarees', place: '', craft: 'Silk • Handloom • Heritage Weaves', image: 'store-silk' },
+  { name: 'More Makers Soon', place: '', craft: 'A new artisan store is being curated', image: 'store-coming' },
 ] as const
 
 const products = [
@@ -54,12 +56,14 @@ function App() {
     const match = window.location.hash.match(/^#store\/(\d+)$/)
     return match ? Number(match[1]) : null
   })
-  const [cartCount, setCartCount] = useState(0)
+  const [cartOpen, setCartOpen] = useState(false)
+  const [cartItems, setCartItems] = useState<{ name: string; price: number; image: string; qty: number }[]>([])
+  const cartCount = cartItems.reduce((total, item) => total + item.qty, 0)
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    document.body.style.overflow = menuOpen || cartOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [menuOpen])
+  }, [menuOpen, cartOpen])
 
   useEffect(() => {
     setSelectedLanguage(window.localStorage.getItem('indus-language') || 'en')
@@ -104,6 +108,16 @@ function App() {
   const openStore = (index: number) => { window.location.hash = `store/${index}` }
   const closeStore = () => { window.location.hash = ''; window.setTimeout(() => document.getElementById('stores')?.scrollIntoView(), 0) }
 
+  const addToCart = (product: { name: string; price: number; image: string }) => {
+    setCartItems((items) => {
+      const existing = items.find((item) => item.name === product.name)
+      return existing ? items.map((item) => item.name === product.name ? { ...item, qty: item.qty + 1 } : item) : [...items, { ...product, qty: 1 }]
+    })
+    setCartOpen(true)
+  }
+  const changeCartQuantity = (name: string, change: number) => setCartItems((items) => items.map((item) => item.name === name ? { ...item, qty: Math.max(1, item.qty + change) } : item))
+  const removeCartItem = (name: string) => setCartItems((items) => items.filter((item) => item.name !== name))
+
   const toggleSaved = (name: string) => {
     setSaved((items) => items.includes(name) ? items.filter((item) => item !== name) : [...items, name])
   }
@@ -111,40 +125,29 @@ function App() {
   const changeLanguage = (language: string) => {
     setSelectedLanguage(language)
     window.localStorage.setItem('indus-language', language)
-    if (language === 'en') {
-      document.cookie = 'googtrans=/en/en; path=/'
-      window.location.reload()
-      return
-    }
-    let attempts = 0
-    const applyTranslation = () => {
-      const translator = document.querySelector<HTMLSelectElement>('#google_translate_element select')
-      if (translator) {
-        translator.value = language
-        translator.dispatchEvent(new Event('change', { bubbles: true }))
-      } else if (attempts++ < 20) window.setTimeout(applyTranslation, 250)
-    }
-    applyTranslation()
+    document.cookie = `googtrans=/en/${language}; path=/; max-age=31536000; SameSite=Lax`
+    window.location.reload()
   }
 
   return (
     <div className="site-shell">
       <a className="skip-link" href="#main">Skip to content</a>
       <header className="header" aria-label="Main navigation">
-        <button className="icon-btn menu-button" onClick={() => setMenuOpen(true)} aria-label="Open navigation"><Menu /></button>
-        <button className="brand" onClick={() => goTo('home')} aria-label="Indus Trend home">
-          <img src="/industrend-logo.jpg" alt="Indus Trend" />
-          <span className="brand-copy"><strong>INDUS TREND</strong><small>AUTHENTIC BHARAT LIFESTYLE PLATFORM</small></span>
-        </button>
+        <div className="header-top">
+          <button className="icon-btn menu-button" onClick={() => setMenuOpen(true)} aria-label="Open navigation"><Menu /></button>
+          <button className="brand" onClick={() => goTo('home')} aria-label="Indus Trend home">
+            <img src="/industrend-logo.jpg" alt="Indus Trend" />
+            <span className="brand-copy"><strong>INDUS TREND</strong><small>SHOP THE SPIRIT OF INDIA.</small></span>
+          </button>
+          <div className="header-actions">
+            <label className="language-picker" aria-label="Choose website language"><Globe2 /><span className="sr-only">Language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select><ChevronDown /></label>
+            <button className="bag-btn" onClick={() => setCartOpen(true)} aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag /><span className="bag-label">Cart</span><b>{cartCount}</b></button>
+            <button className="login-link" onClick={() => alert('Login will be connected to the secure backend service soon.')}>Login</button>
+          </div>
+        </div>
         <nav className="desktop-nav">
           {navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}</button>)}
         </nav>
-        <div className="header-actions">
-          <label className="language-picker" aria-label="Choose website language"><Globe2 /><span className="sr-only">Language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select><ChevronDown /></label>
-          <button className="login-link" onClick={() => alert('Login will be connected to the secure backend service soon.')}>Login</button>
-          <button className="icon-btn search-btn" aria-label="Search"><Search /></button>
-          <button className="bag-btn" aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag /><span>{cartCount}</span></button>
-        </div>
       </header>
 
       <div className={`mobile-drawer ${menuOpen ? 'open' : ''}`} aria-hidden={!menuOpen}>
@@ -156,14 +159,24 @@ function App() {
       </div>
       {menuOpen && <button className="drawer-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
 
-      {activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={() => setCartCount((count) => count + 1)} /> : <main id="main">
+      <div className={`cart-backdrop ${cartOpen ? 'open' : ''}`} onClick={() => setCartOpen(false)} />
+      <aside className={`cart-drawer ${cartOpen ? 'open' : ''}`} aria-hidden={!cartOpen} aria-label="Shopping cart">
+        <div className="cart-drawer-head"><div><span>YOUR CART</span><h2>Beautiful things,<br />ready for you.</h2></div><button onClick={() => setCartOpen(false)} aria-label="Close cart"><X /></button></div>
+        <div className="cart-drawer-items">
+          {!cartItems.length && <div className="cart-empty"><ShoppingBag /><h3>Your cart is empty</h3><p>Explore artisan-made pieces and add something meaningful.</p><button onClick={() => { setCartOpen(false); goTo('products') }}>Explore products</button></div>}
+          {cartItems.map((item) => <article className="cart-line" key={item.name}><img src={item.image} alt="" /><div><h3>{item.name}</h3><b>₹{item.price.toLocaleString('en-IN')}</b><div className="cart-qty"><button onClick={() => changeCartQuantity(item.name, -1)} aria-label={`Reduce ${item.name}`}><Minus /></button><span>{item.qty}</span><button onClick={() => changeCartQuantity(item.name, 1)} aria-label={`Increase ${item.name}`}><Plus /></button></div></div><button className="cart-remove" onClick={() => removeCartItem(item.name)}>Remove</button></article>)}
+        </div>
+        {!!cartItems.length && <div className="cart-summary"><div><span>Subtotal</span><strong>₹{cartItems.reduce((total, item) => total + item.price * item.qty, 0).toLocaleString('en-IN')}</strong></div><div><span>Shipping</span><b>FREE</b></div><p>Marketplace protection included</p><button onClick={() => alert('Checkout will be connected to the payment service soon.')}>Proceed to checkout <ArrowRight /></button></div>}
+      </aside>
+
+      {activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
         <section className="hero hero-slider" id="home" aria-roledescription="carousel" aria-label="Featured Indian craftsmanship" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)} onFocus={() => setHeroPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false) }}>
           <div className="hero-slides">
             {heroSlides.map((slide, index) => <img key={slide.src} className={`hero-image ${index === activeHero ? 'active' : ''}`} src={slide.src} alt={index === activeHero ? slide.alt : ''} aria-hidden={index !== activeHero} />)}
           </div>
           <div className="hero-overlay" />
           <div className="hero-content">
-            <h1>Rare craft.<br /><em>Remarkable stories.</em></h1>
+            <span className="hero-kicker">CURATED INDIAN MARKETPLACE</span><h1>Discover a store.<br /><em>Buy with confidence.</em></h1><p>Meet independent makers, explore their collections, and shop authentic Indian craft directly from the people behind it.</p><button className="primary-btn" onClick={() => goTo('stores')}>Visit artisan stores <ArrowRight /></button>
           </div>
           <div className="hero-controls">
             <button onClick={() => setActiveHero((activeHero - 1 + heroSlides.length) % heroSlides.length)} aria-label="Previous image"><ChevronLeft /></button>
@@ -207,7 +220,7 @@ function App() {
               </article>
             ))}
           </div>
-          <button className="outline-btn" onClick={() => alert('More products will arrive with the commerce experience.')}>Discover all products <ArrowRight /></button>
+          <button className="outline-btn" onClick={() => alert('More products will arrive with the commerce experience.')}>Explore products <ArrowRight /></button>
         </section>
 
         <section className="story-section" id="about">
