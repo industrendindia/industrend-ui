@@ -1,15 +1,15 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Minus, Package, Phone, Plus, Search, ShoppingBag, X } from 'lucide-react'
+import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Minus, Phone, Plus, Search, ShoppingBag, X } from 'lucide-react'
 import { FaWhatsapp } from 'react-icons/fa'
 import Storefront from './Storefront'
 import './storefront.css'
 
 const navItems = [
   ['Home', 'home'],
-  ['Stores', 'stores'],
-  ['Our Products', 'products'],
+  ['Sellers Login', 'seller-login'],
   ['About Us', 'about'],
   ['Contact Us', 'contact'],
+  ['Products & Services', 'services'],
 ] as const
 
 const indianLanguages = [
@@ -21,7 +21,7 @@ const indianLanguages = [
 
 const stores = [
   { name: 'Rahul Sawant', place: '', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
-  { name: 'Mitti & More', place: 'Kutch, Gujarat', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
+  { name: 'Mitti & More', place: '', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
   { name: 'Silk Sarees', place: '', craft: 'Silk • Handloom • Heritage Weaves', image: 'store-silk' },
   { name: 'More Makers Soon', place: '', craft: 'A new artisan store is being curated', image: 'store-coming' },
 ] as const
@@ -31,6 +31,15 @@ const products = [
   { name: 'Kutch Earth Vase', maker: 'By Mitti & More', price: '₹2,850', tag: 'SMALL BATCH', tone: 'vase' },
   { name: 'Banarasi Table Runner', maker: 'By The Loom Story', price: '₹4,200', tag: 'HANDWOVEN', tone: 'textile' },
   { name: 'Dhokra Forest Horse', maker: 'By Bastar Foundry', price: '₹6,750', tag: 'COLLECTOR EDITION', tone: 'brass' },
+] as const
+
+const businessServices = [
+  { code: '1', title: 'Billing', description: 'Fast invoices, payment records and sales reports.' },
+  { code: '2', title: 'Inventory', description: 'Track stock, low-stock items and product sales.' },
+  { code: '3', title: 'Customer Management', description: 'Customer details, purchase history and follow-ups.' },
+  { code: '4', title: 'AI Calling', description: 'AI telecaller and 24×7 voice agent.' },
+  { code: '6', title: 'CRM', description: 'Leads, sales pipeline, team activity and follow-ups.' },
+  { code: '7', title: 'ERP', description: 'Sales, purchases, inventory and operations in one system.' },
 ] as const
 
 const heroSlides = [
@@ -99,6 +108,7 @@ function App() {
   }, [])
 
   const goTo = (id: string) => {
+    if (id === 'seller-login') { alert('Seller login will be connected to the secure seller portal soon.'); setMenuOpen(false); return }
     if (activeStore !== null) {
       window.location.hash = ''
       window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 0)
@@ -135,13 +145,12 @@ function App() {
     const query = headerSearch.trim().toLowerCase()
     if (!query) return
     const storeMatch = stores.some((store) => `${store.name} ${store.craft}`.toLowerCase().includes(query))
-    goTo(storeMatch || query.includes('store') || query.includes('craft') ? 'stores' : 'products')
+    goTo(storeMatch || query.includes('store') || query.includes('craft') ? 'stores' : query.includes('service') || query.includes('billing') || query.includes('crm') ? 'services' : 'products')
   }
   return (
     <div className="site-shell">
       <a className="skip-link" href="#main">Skip to content</a>
       <header className="header" aria-label="Main navigation">
-        <div className="prototype-note">Authentic Indian craft, thoughtfully curated from independent makers.</div>
         <div className="header-top">
           <button className="icon-btn menu-button" onClick={() => setMenuOpen(true)} aria-label="Open navigation"><Menu /></button>
           <button className="brand" onClick={() => goTo('home')} aria-label="Indus Trend home">
@@ -154,7 +163,6 @@ function App() {
             <button type="submit">Search</button>
           </form>          <div className="header-actions">
             <button className="header-utility" onClick={() => goTo("products")}><Heart />Wishlist</button>
-            <button className="header-utility" onClick={() => alert("Your orders will appear here after checkout.")}><Package />My Orders</button>
             <button className="bag-btn" onClick={() => setCartOpen(true)} aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag /><span className="bag-label">Cart</span><b>{cartCount}</b></button>
             <button className="login-link" onClick={() => alert('Login will be connected to the secure backend service soon.')}>Login</button>
           </div>
@@ -217,6 +225,7 @@ function App() {
               <article className="store-card" key={store.name}>
                 <div className={`store-art ${store.image}`}>
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
+                  {index === 1 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
                   <span className="store-number">0{index + 1}</span><div className="craft-object" />
                 </div>
                 <div className="store-meta"><div><h3>{store.name}</h3><p className="store-categories">{store.craft}</p>{store.place && <p><MapPin /> {store.place}</p>}</div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
@@ -238,6 +247,22 @@ function App() {
           <button className="outline-btn" onClick={() => alert('More products will arrive with the commerce experience.')}>Explore products <ArrowRight /></button>
         </section>
 
+        <section className="business-solutions" id="services">
+          <div className="solutions-brand-hero">
+            <img src="/industrend-logo.jpg" alt="Indus Trend" />
+            <div><span>INDUS TREND</span><small>SMART BUSINESS SOLUTIONS</small><i />
+              <h2>Your smart digital<br /><em>business partner</em></h2>
+            </div>
+          </div>
+          <div className="solutions-promise">From Billing to AI Sales — Everything in One Place</div>
+          <div className="solutions-intro"><h3>Simplify and Organise Your Business</h3><p>Useful digital solutions for small, medium and growing businesses</p></div>
+          <div className="service-grid">
+            {businessServices.map((service) => <article className="service-card" key={service.title}><span>{service.code}</span><div><h4>{service.title}</h4><p>{service.description}</p></div></article>)}
+          </div>
+          <article className="whatsapp-solution"><div className="whatsapp-solution-title"><FaWhatsapp /><h3>WhatsApp Business API + AI</h3></div><ol><li>Marketing and transactional messages</li><li>AI WhatsApp salesperson — instant answers to customer questions</li><li>Complete flow from products and orders to payments and support</li></ol><p>24×7 customer service <b>•</b> Faster follow-ups <b>•</b> More sales</p></article>
+          <div className="solutions-vision"><h3>Our Vision</h3><div><span>Promote Made in India products</span><span>Support unorganised businesses to grow</span><span>Provide an e-commerce sales platform</span><span>Grow sales and customer base</span></div></div>
+          <div className="solutions-demo"><div><h3>Book a Demo Today</h3><p>Call / WhatsApp</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
+        </section>
         <section className="story-section" id="about">
           <div className="story-pattern"><div className="story-medallion"><img src="/industrend-logo.jpg" alt="Indus Trend seal" /></div></div>
           <div className="story-copy"><span className="kicker">OUR NORTH STAR</span><h2>Not just made in India.<br /><em>Made of India.</em></h2><p>Indus Trend is a bridge between exceptional Indian makers and people around the world who value what is real, rare and responsibly made.</p><p>We seek out work with a distinct voice—objects rooted in place, carried by tradition, and alive with the character of the hands that shaped them.</p><button className="text-btn light" onClick={() => alert('Our complete story is coming soon.')}>Read our story <ArrowRight /></button></div>
