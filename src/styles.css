@@ -13,7 +13,7 @@
 .hero-slider .hero-image{opacity:0;transform:scale(1.025);transition:opacity .8s ease,transform 6s ease;object-position:center}
 .hero-slider .hero-image.active{opacity:1;transform:scale(1)}
 .hero-slider .hero-overlay{z-index:1;background:linear-gradient(90deg,rgba(25,14,9,.78) 0%,rgba(25,14,9,.5) 30%,rgba(25,14,9,.06) 58%,rgba(25,14,9,.12) 100%)}
-.hero-slider .hero-content{width:min(570px,42vw);margin-left:max(4vw,calc((100vw - 1380px)/2));padding:28px 30px;background:rgba(28,17,11,.68);border-left:3px solid #d78238;box-shadow:0 22px 60px rgba(0,0,0,.24);backdrop-filter:blur(8px)}
+.hero-slider .hero-content{width:min(900px,70vw);margin-left:max(7.5vw,calc((100vw - 1380px)/2));padding:0;background:transparent;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
 .hero-slider .hero-content h1{margin:0;font-size:clamp(48px,5.3vw,78px);text-shadow:0 2px 18px rgba(0,0,0,.25)}
 .hero-controls{position:absolute;z-index:3;left:max(4vw,calc((100vw - 1380px)/2));bottom:28px;display:flex;align-items:center;gap:14px;padding:7px 9px;background:rgba(28,17,11,.58);border-radius:999px;backdrop-filter:blur(8px)}
 .hero-controls>button{width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:#fff}
