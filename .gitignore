@@ -3,4 +3,4 @@ dist
 .env
 *.tsbuildinfo
 
-backend/target/
+.service-repos/
