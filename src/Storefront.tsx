@@ -5,25 +5,27 @@ type StorefrontProps = { storeIndex: number; onBack: () => void; onAddToCart: (p
 type Product = { id: string; name: string; category: string; price: number; mrp: number; rating: number; reviews: number; stock: number; image: string; material: string; size: string; dispatch: string; description: string }
 
 const product = (id: string, name: string, category: string, price: number, mrp: number, rating: number, reviews: number, stock: number, material = 'Decorative handcrafted art', size = 'Display size — exact dimensions confirmed before dispatch'): Product => ({
-  id, name, category, price, mrp, rating, reviews, stock, image: `/store1-product-${id}.jpg`, material, size, dispatch: category === 'Paintings' ? '2–4 business days' : '3–6 business days', description: category === 'Paintings' ? 'A richly detailed artwork presented in a warm artisan-studio setting. Designed as a premium statement piece for living rooms, pooja spaces and meaningful gifting.' : 'A handcrafted devotional piece created with expressive colour and fine decorative detail for pooja spaces, festive display and meaningful gifting.'
+  id, name, category, price, mrp, rating, reviews, stock, image: `/store1-product-${id}.jpg`, material, size, dispatch: category.includes('Painting') ? '2–4 business days' : '3–6 business days', description: category.includes('Painting') ? 'A richly detailed artwork presented in a warm artisan-studio setting. Designed as a premium statement piece for living rooms, pooja spaces and meaningful gifting.' : 'A handcrafted devotional piece created with expressive colour and fine decorative detail for pooja spaces, festive display and meaningful gifting.'
 })
 
 const rahulProducts: Product[] = [
-  product('krishna-radha', 'Krishna & Radha Devotional Artwork', 'Paintings', 4999, 5999, 4.9, 128, 7, 'Mixed-media fine art', '24 × 30 in'),
-  product('shivaji', 'Chhatrapati Shivaji Maharaj Portrait', 'Paintings', 5499, 6499, 4.8, 94, 5, 'Fine-art print with handcrafted finish', '24 × 30 in'),
-  product('ganesh-royal-seated', 'Royal Seated Ganesh Idol', 'Ganesh Idols', 7499, 8499, 4.9, 42, 3),
-  product('ganesh-turquoise-orange', 'Traditional Turquoise & Orange Ganesh Idol', 'Ganesh Idols', 6499, 7499, 4.8, 37, 4),
-  product('ganesh-regal-lotus', 'Regal Lotus Ganesh Idol', 'Ganesh Idols', 8999, 9999, 4.9, 31, 2),
-  product('ganesh-pink-lotus', 'Pink Lotus Ganesh Idol', 'Ganesh Idols', 6999, 7999, 4.8, 28, 5),
-  product('ganesh-purple-royal-seated', 'Royal Purple Seated Ganesh Idol', 'Ganesh Idols', 7299, 8299, 4.8, 19, 3),
-  product('ganesh-jewel-crown', 'Jewel Crown Ganesh Idol', 'Ganesh Idols', 5999, 6999, 4.8, 17, 4),
-  product('ganesh-pink-dhoti', 'Pink Dhoti Ganesh Idol', 'Ganesh Idols', 6799, 7799, 4.9, 21, 3),
-  product('ganesh-golden-four-arm', 'Golden Four-Arm Ganesh Idol', 'Ganesh Idols', 6199, 7199, 4.8, 15, 4),
-  product('ganesh-green-dhoti', 'Green Dhoti Ganesh Idol', 'Ganesh Idols', 5899, 6899, 4.8, 18, 5),
-  product('ganesh-pink-lotus-pearl', 'Pearl Lotus Ganesh Idol', 'Ganesh Idols', 6399, 7399, 4.9, 16, 3),
-  product('ganesh-orange-pink-lotus', 'Orange & Pink Lotus Ganesh Idol', 'Ganesh Idols', 5699, 6699, 4.7, 14, 4),
-  product('ganesh-pink-traditional', 'Traditional Pink Ganesh Idol', 'Ganesh Idols', 4999, 5999, 4.7, 13, 6),
+  product('krishna-radha', 'Krishna & Radha Devotional Artwork', 'Canvas Painting', 4999, 5999, 4.9, 128, 7, 'Mixed-media fine art', '24 × 30 in'),
+  product('shivaji', 'Chhatrapati Shivaji Maharaj Portrait', 'Portrait Painting', 5499, 6499, 4.8, 94, 5, 'Fine-art print with handcrafted finish', '24 × 30 in'),
+  product('ganesh-royal-seated', 'Royal Seated Ganesh Idol', 'God Statue Painting', 7499, 8499, 4.9, 42, 3),
+  product('ganesh-turquoise-orange', 'Traditional Turquoise & Orange Ganesh Idol', 'God Statue Painting', 6499, 7499, 4.8, 37, 4),
+  product('ganesh-regal-lotus', 'Regal Lotus Ganesh Idol', 'God Statue Painting', 8999, 9999, 4.9, 31, 2),
+  product('ganesh-pink-lotus', 'Pink Lotus Ganesh Idol', 'God Statue Painting', 6999, 7999, 4.8, 28, 5),
+  product('ganesh-purple-royal-seated', 'Royal Purple Seated Ganesh Idol', 'God Statue Painting', 7299, 8299, 4.8, 19, 3),
+  product('ganesh-jewel-crown', 'Jewel Crown Ganesh Idol', 'God Statue Painting', 5999, 6999, 4.8, 17, 4),
+  product('ganesh-pink-dhoti', 'Pink Dhoti Ganesh Idol', 'God Statue Painting', 6799, 7799, 4.9, 21, 3),
+  product('ganesh-golden-four-arm', 'Golden Four-Arm Ganesh Idol', 'God Statue Painting', 6199, 7199, 4.8, 15, 4),
+  product('ganesh-green-dhoti', 'Green Dhoti Ganesh Idol', 'God Statue Painting', 5899, 6899, 4.8, 18, 5),
+  product('ganesh-pink-lotus-pearl', 'Pearl Lotus Ganesh Idol', 'God Statue Painting', 6399, 7399, 4.9, 16, 3),
+  product('ganesh-orange-pink-lotus', 'Orange & Pink Lotus Ganesh Idol', 'God Statue Painting', 5699, 6699, 4.7, 14, 4),
+  product('ganesh-pink-traditional', 'Traditional Pink Ganesh Idol', 'God Statue Painting', 4999, 5999, 4.7, 13, 6),
 ]
+
+const rahulCategories = ['All Products', 'Canvas Painting', 'Portrait Painting', 'Landscape Painting', 'Abstract Painting', 'God Statue Painting', 'Wall Painting', 'Mural Painting', 'Name Plate Mural']
 
 const fallbackProducts: Product[] = [product('krishna-radha', 'Artisan Collection', 'All Products', 2850, 3200, 4.8, 24, 6)]
 const money = (value: number) => `₹${value.toLocaleString('en-IN')}`
@@ -40,7 +42,7 @@ export default function Storefront({ storeIndex, onBack, onAddToCart }: Storefro
   const [quantity, setQuantity] = useState(1)
   const [saved, setSaved] = useState<string[]>([])
 
-  const categories = useMemo(() => ['All Products', ...Array.from(new Set(products.map((item) => item.category).filter((item) => item !== 'All Products')))], [products])
+  const categories = useMemo(() => isRahul ? rahulCategories : ['All Products', ...Array.from(new Set(products.map((item) => item.category).filter((item) => item !== 'All Products')))], [isRahul, products])
   const filteredCategories = categories.filter((item) => item.toLowerCase().includes(categorySearch.toLowerCase()))
   const visibleProducts = useMemo(() => {
     const query = productSearch.trim().toLowerCase()

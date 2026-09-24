@@ -45,6 +45,7 @@ const businessServices = [
 
 const heroSlides = [
   { src: '/hero-marble-craft.jpeg', alt: 'Hand-carved marble decor crafted in India' },
+  { src: '/hero-curated-crafts.jpeg', alt: 'A curated collection of Indian pottery, carving, sculpture and brass craft' },
   { src: '/hero-wood-craft.jpeg', alt: 'A collection of richly carved Indian wooden craft' },
   { src: '/hero-painting-craft.jpeg', alt: 'Indian artists creating intricate floral paintings by hand' },
 ] as const
@@ -241,7 +242,7 @@ function App() {
                 <div className={`store-art ${store.image}`}>
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
                   {index === 1 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
-                  <span className="store-number">0{index + 1}</span><div className="craft-object" />
+                  <div className="craft-object" />
                 </div>
                 <div className="store-meta"><div><h3>{store.name}</h3><p className="store-categories">{store.craft}</p>{store.place && <p><MapPin /> {store.place}</p>}</div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
               </article>
