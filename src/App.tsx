@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Minus, Phone, Plus, Search, ShoppingBag, X } from 'lucide-react'
 import { FaWhatsapp } from 'react-icons/fa'
 import Storefront from './Storefront'
+import AccountPage, { type CustomerSession } from './AccountPage'
 import './storefront.css'
 
 const navItems = [
@@ -68,8 +69,19 @@ function App() {
   const [cartOpen, setCartOpen] = useState(false)
   const [headerSearch, setHeaderSearch] = useState("")
   const [cartItems, setCartItems] = useState<{ name: string; price: number; image: string; qty: number }[]>([])
+  const [accountOpen, setAccountOpen] = useState(false)
+  const [customer, setCustomer] = useState<CustomerSession | null>(null)
+  const [csrfToken, setCsrfToken] = useState("")
   const cartCount = cartItems.reduce((total, item) => total + item.qty, 0)
 
+  useEffect(() => {
+    fetch('/api/v1/auth/session', { credentials: 'include', cache: 'no-store' }).then(async (response) => {
+      if (!response.ok) return
+      const current = await response.json() as CustomerSession
+      setCustomer(current)
+      setCsrfToken(current.csrfToken || '')
+    }).catch(() => undefined)
+  }, [])
   useEffect(() => {
     document.body.style.overflow = menuOpen || cartOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -108,8 +120,11 @@ function App() {
   }, [])
 
   const goTo = (id: string) => {
-    if (id === 'seller-login') { alert('Seller login will be connected to the secure seller portal soon.'); setMenuOpen(false); return }
-    if (activeStore !== null) {
+    if (id === 'seller-login') { setAccountOpen(true); setMenuOpen(false); return }
+    if (accountOpen) {
+      setAccountOpen(false)
+      window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 0)
+    } else if (activeStore !== null) {
       window.location.hash = ''
       window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 0)
     } else document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -164,7 +179,7 @@ function App() {
           </form>          <div className="header-actions">
             <button className="header-utility" onClick={() => goTo("products")}><Heart />Wishlist</button>
             <button className="bag-btn" onClick={() => setCartOpen(true)} aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag /><span className="bag-label">Cart</span><b>{cartCount}</b></button>
-            <button className="login-link" onClick={() => alert('Login will be connected to the secure backend service soon.')}>Login</button>
+            <button className="login-link" onClick={() => setAccountOpen(true)}>{customer?.firstName || 'Login'}</button>
           </div>
         </div>
         <nav className="desktop-nav">
@@ -178,7 +193,7 @@ function App() {
         <img src="/industrend-logo.jpg" alt="" />
         <nav>{navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}<ChevronRight /></button>)}</nav>
         <label className="drawer-language"><Globe2 /><span>Website language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>
-        <button className="drawer-login" onClick={() => alert('Login will be connected soon.')}>Login to your account</button>
+        <button className="drawer-login" onClick={() => { setAccountOpen(true); setMenuOpen(false) }}>{customer?.firstName ? `Profile: ${customer.firstName}` : 'Login to your account'}</button>
       </div>
       {menuOpen && <button className="drawer-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
 
@@ -192,7 +207,7 @@ function App() {
         {!!cartItems.length && <div className="cart-summary"><div><span>Subtotal</span><strong>₹{cartItems.reduce((total, item) => total + item.price * item.qty, 0).toLocaleString('en-IN')}</strong></div><div><span>Shipping</span><b>FREE</b></div><p>Marketplace protection included</p><button onClick={() => alert('Checkout will be connected to the payment service soon.')}>Proceed to checkout <ArrowRight /></button></div>}
       </aside>
 
-      {activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
+      {accountOpen ? <AccountPage user={customer} csrfToken={csrfToken} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={() => setAccountOpen(false)} onLogout={() => { setCustomer(null); setCsrfToken(""); setAccountOpen(false) }} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
         <section className="hero hero-slider" id="home" aria-roledescription="carousel" aria-label="Featured Indian craftsmanship" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)} onFocus={() => setHeroPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false) }}>
           <div className="hero-slides">
             {heroSlides.map((slide, index) => <img key={slide.src} className={`hero-image ${index === activeHero ? 'active' : ''}`} src={slide.src} alt={index === activeHero ? slide.alt : ''} aria-hidden={index !== activeHero} />)}

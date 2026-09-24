@@ -1,0 +1,22 @@
+[Unit]
+Description=Indus Trend Customer Platform API
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=industrend
+Group=industrend
+WorkingDirectory=/srv/industrend/app/backend
+EnvironmentFile=/etc/industrend/industrend-api.env
+ExecStart=/usr/bin/java -XX:MaxRAMPercentage=70 -jar /srv/industrend/app/backend/target/customer-platform-service-0.1.0.jar
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/industrend
+
+[Install]
+WantedBy=multi-user.target
