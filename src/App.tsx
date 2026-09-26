@@ -59,7 +59,7 @@ declare global {
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [saved, setSaved] = useState<string[]>([])
+  const [activePage, setActivePage] = useState<'home' | 'services'>('home')
   const [selectedLanguage, setSelectedLanguage] = useState('en')
   const [activeHero, setActiveHero] = useState(0)
   const [heroPaused, setHeroPaused] = useState(false)
@@ -122,13 +122,14 @@ function App() {
 
   const goTo = (id: string) => {
     if (id === 'seller-login') { setMenuOpen(false); return }
-    if (accountOpen) {
-      setAccountOpen(false)
-      window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 0)
-    } else if (activeStore !== null) {
-      window.location.hash = ''
-      window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 0)
-    } else document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    const nextPage = id === 'services' ? 'services' : 'home'
+    setActivePage(nextPage)
+    setAccountOpen(false)
+    if (activeStore !== null) window.location.hash = ''
+    window.setTimeout(() => {
+      if (nextPage === 'services') window.scrollTo({ top: 0, behavior: 'smooth' })
+      else document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    }, 0)
     setMenuOpen(false)
   }
 
@@ -144,10 +145,6 @@ function App() {
   }
   const changeCartQuantity = (name: string, change: number) => setCartItems((items) => items.map((item) => item.name === name ? { ...item, qty: Math.max(1, item.qty + change) } : item))
   const removeCartItem = (name: string) => setCartItems((items) => items.filter((item) => item.name !== name))
-
-  const toggleSaved = (name: string) => {
-    setSaved((items) => items.includes(name) ? items.filter((item) => item !== name) : [...items, name])
-  }
 
   const changeLanguage = (language: string) => {
     setSelectedLanguage(language)
@@ -209,6 +206,7 @@ function App() {
       </aside>
 
       {accountOpen ? <AccountPage user={customer} csrfToken={csrfToken} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={() => goTo('stores')} onLogout={() => { setCustomer(null); setCsrfToken(""); setAccountOpen(false) }} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
+        {activePage === 'home' && <>
         <section className="hero hero-slider" id="home" aria-roledescription="carousel" aria-label="Featured Indian craftsmanship" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)} onFocus={() => setHeroPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false) }}>
           <div className="hero-slides">
             {heroSlides.map((slide, index) => <img key={slide.src} className={`hero-image ${index === activeHero ? 'active' : ''}`} src={slide.src} alt={index === activeHero ? slide.alt : ''} aria-hidden={index !== activeHero} />)}
@@ -250,20 +248,15 @@ function App() {
           </div>
         </section>
 
-        <section className="section products-section" id="products">
-          <div className="section-heading centered"><span className="kicker">OBJECTS OF MEANING</span><h2>Chosen for their <em>story.</em></h2><p>A considered edit of objects made with patience, purpose and a point of view.</p></div>
-          <div className="product-grid">
-            {products.map((product) => (
-              <article className="product-card" key={product.name}>
-                <div className={`product-art product-${product.tone}`}><span>{product.tag}</span><button className={saved.includes(product.name) ? 'saved' : ''} onClick={() => toggleSaved(product.name)} aria-label={`Save ${product.name}`}><Heart fill={saved.includes(product.name) ? 'currentColor' : 'none'} /></button><div className="product-object" /></div>
-                <div className="product-info"><div><small>{product.maker}</small><h3>{product.name}</h3></div><strong>{product.price}</strong></div>
-              </article>
-            ))}
+        <section className="popular-showcase" id="products">
+          <div className="popular-head"><span className="popular-kicker">Popular Products</span><h2>Most Loved <em>Indian Finds.</em></h2><p>Discover handcrafted pieces our customers are loving most — authentic products from Indian artisans, makers and heritage stores.</p></div>
+          <div className="popular-grid" aria-label="Popular products coming soon">
+            {['Paintings', 'Stone Art', 'Home Décor', 'Heritage Craft'].map((category) => <article className="popular-card popular-coming" key={category}><div className="popular-image"><span>Coming soon</span></div><div className="popular-body"><small>{category}</small><h3>Product coming soon</h3></div></article>)}
           </div>
-          <button className="outline-btn" onClick={() => alert('More products will arrive with the commerce experience.')}>Explore products <ArrowRight /></button>
         </section>
+        </>}
 
-        <section className="business-solutions" id="services">
+        {activePage === 'services' && <section className="business-solutions" id="services">
           <div className="solutions-brand-hero">
             <img src="/industrend-logo.jpg" alt="Indus Trend" />
             <div><span>INDUS TREND</span><small>SMART BUSINESS SOLUTIONS</small><i />
@@ -278,8 +271,8 @@ function App() {
           <article className="whatsapp-solution"><div className="whatsapp-solution-title"><FaWhatsapp /><h3>WhatsApp Business API + AI</h3></div><ol><li>Marketing and transactional messages</li><li>AI WhatsApp salesperson — instant answers to customer questions</li><li>Complete flow from products and orders to payments and support</li></ol><p>24×7 customer service <b>•</b> Faster follow-ups <b>•</b> More sales</p></article>
           <div className="solutions-vision"><h3>Our Vision</h3><div><span>Promote Made in India products</span><span>Support unorganised businesses to grow</span><span>Provide an e-commerce sales platform</span><span>Grow sales and customer base</span></div></div>
           <div className="solutions-demo"><div><h3>Book a Demo Today</h3><p>Call / WhatsApp</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
-        </section>
-<section className="contact-section" id="contact">
+        </section>}
+{activePage === 'home' && <section className="contact-section" id="contact">
           <div className="contact-copy"><span className="kicker">WE’D LOVE TO HEAR FROM YOU</span><h2>Contact <em>Us.</em></h2><p>Questions about a piece, a maker, or your order? Our team is here to help.</p>
             <address>
               <a href="https://www.google.com/maps/search/?api=1&query=Leon+Orbit+B+Wing+Kokane+Chowk+Rahatani+Pune+411017" target="_blank" rel="noreferrer"><span><MapPin /></span><div><b>Office address</b><small>Leon Orbit, B Wing, Kokane Chowk,<br />Rahatani, Pune – 411017</small></div><ArrowRight /></a>
@@ -288,7 +281,7 @@ function App() {
             </address>
           </div>
           <div className="map-wrap"><iframe title="Indus Trend location at Leon Orbit, Rahatani, Pune" src="https://www.google.com/maps?q=Leon%20Orbit%20B%20Wing%20Kokane%20Chowk%20Rahatani%20Pune%20411017&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" /><a href="https://www.google.com/maps/dir/?api=1&destination=Leon+Orbit+B+Wing+Kokane+Chowk+Rahatani+Pune+411017" target="_blank" rel="noreferrer">Get directions <ArrowRight /></a></div>
-        </section>
+        </section>}
       </main>}
 
       <footer>
