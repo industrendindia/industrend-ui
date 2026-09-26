@@ -200,7 +200,7 @@ function App() {
         <img src="/industrend-logo.jpg" alt="" />
         <nav>{navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}<ChevronRight /></button>)}</nav>
         <label className="drawer-language"><Globe2 /><span>Website language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>
-        <button className="drawer-login" onClick={() => { setAccountOpen(true); setMenuOpen(false) }}>{customer?.firstName ? `Profile: ${customer.firstName}` : 'Login to your account'}</button>
+        {customer ? <div className="drawer-account"><strong>{customer.firstName || 'My Account'}</strong><button onClick={() => { setMenuOpen(false); openAccountView('profile') }}><UserRound /> My Profile</button><button onClick={() => { setMenuOpen(false); openAccountView('pinSetup') }}><KeyRound /> Change Login PIN</button><button className="drawer-logout" onClick={() => { setMenuOpen(false); void logoutCustomer() }}><LogOut /> Logout</button></div> : <button className="drawer-login" onClick={() => { setMenuOpen(false); openAccountView('profile') }}>Login to your account</button>}
       </div>
       {menuOpen && <button className="drawer-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
 
