@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, Mail, MapPin, Menu, Minus, Phone, Plus, Search, ShoppingBag, X } from 'lucide-react'
+import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, KeyRound, LogOut, Mail, MapPin, Menu, Minus, Phone, Plus, Search, ShoppingBag, UserRound, X } from 'lucide-react'
 import { FaWhatsapp } from 'react-icons/fa'
 import Storefront from './Storefront'
 import AccountPage, { type CustomerSession } from './AccountPage'
@@ -71,6 +71,8 @@ function App() {
   const [headerSearch, setHeaderSearch] = useState("")
   const [cartItems, setCartItems] = useState<{ name: string; price: number; image: string; qty: number }[]>([])
   const [accountOpen, setAccountOpen] = useState(false)
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  const [accountView, setAccountView] = useState<'profile' | 'pinSetup'>('profile')
   const [customer, setCustomer] = useState<CustomerSession | null>(null)
   const [csrfToken, setCsrfToken] = useState("")
   const cartCount = cartItems.reduce((total, item) => total + item.qty, 0)
@@ -145,7 +147,11 @@ function App() {
   }
   const changeCartQuantity = (name: string, change: number) => setCartItems((items) => items.map((item) => item.name === name ? { ...item, qty: Math.max(1, item.qty + change) } : item))
   const removeCartItem = (name: string) => setCartItems((items) => items.filter((item) => item.name !== name))
-
+  const openAccountView = (view: 'profile' | 'pinSetup') => { setAccountView(view); setAccountOpen(true); setAccountMenuOpen(false) }
+  const logoutCustomer = async () => {
+    try { await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'include', headers: { 'X-CSRF-Token': csrfToken } }) }
+    finally { history.replaceState(null, '', location.pathname); setCustomer(null); setCsrfToken(''); setAccountOpen(false); setAccountMenuOpen(false); setActivePage('home') }
+  }
   const changeLanguage = (language: string) => {
     setSelectedLanguage(language)
     window.localStorage.setItem('indus-language', language)
@@ -177,7 +183,10 @@ function App() {
           </form>          <div className="header-actions">
             <button className="header-utility" onClick={() => goTo("products")}><Heart />Wishlist</button>
             <button className="bag-btn" onClick={() => setCartOpen(true)} aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag /><span className="bag-label">Cart</span><b>{cartCount}</b></button>
-            <button className="login-link" onClick={() => setAccountOpen(true)}>{customer?.firstName || 'Login'}</button>
+            <div className="account-menu-wrap">
+              <button className="login-link" onClick={() => customer ? setAccountMenuOpen((open) => !open) : openAccountView('profile')} aria-expanded={customer ? accountMenuOpen : undefined}>{customer?.firstName || 'Login'}</button>
+              {customer && accountMenuOpen && <div className="account-menu" role="menu"><button role="menuitem" onClick={() => openAccountView('profile')}><UserRound /> My Profile</button><button role="menuitem" onClick={() => openAccountView('pinSetup')}><KeyRound /> Change Login PIN</button><button role="menuitem" onClick={logoutCustomer}><LogOut /> Logout</button></div>}
+            </div>
           </div>
         </div>
         <nav className="desktop-nav">
@@ -205,7 +214,7 @@ function App() {
         {!!cartItems.length && <div className="cart-summary"><div><span>Subtotal</span><strong>₹{cartItems.reduce((total, item) => total + item.price * item.qty, 0).toLocaleString('en-IN')}</strong></div><div><span>Shipping</span><b>FREE</b></div><p>Marketplace protection included</p><button onClick={() => alert('Checkout will be connected to the payment service soon.')}>Proceed to checkout <ArrowRight /></button></div>}
       </aside>
 
-      {accountOpen ? <AccountPage user={customer} csrfToken={csrfToken} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={() => goTo('stores')} onLogout={() => { setCustomer(null); setCsrfToken(""); setAccountOpen(false) }} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
+      {accountOpen ? <AccountPage key={accountView} user={customer} csrfToken={csrfToken} initialStep={accountView} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={() => goTo('stores')} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
         {activePage === 'home' && <>
         <section className="hero hero-slider" id="home" aria-roledescription="carousel" aria-label="Featured Indian craftsmanship" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)} onFocus={() => setHeroPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false) }}>
           <div className="hero-slides">
