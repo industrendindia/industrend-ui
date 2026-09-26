@@ -121,7 +121,7 @@ function App() {
   }, [])
 
   const goTo = (id: string) => {
-    if (id === 'seller-login') { setAccountOpen(true); setMenuOpen(false); return }
+    if (id === 'seller-login') { setMenuOpen(false); return }
     if (accountOpen) {
       setAccountOpen(false)
       window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 0)
@@ -208,7 +208,7 @@ function App() {
         {!!cartItems.length && <div className="cart-summary"><div><span>Subtotal</span><strong>₹{cartItems.reduce((total, item) => total + item.price * item.qty, 0).toLocaleString('en-IN')}</strong></div><div><span>Shipping</span><b>FREE</b></div><p>Marketplace protection included</p><button onClick={() => alert('Checkout will be connected to the payment service soon.')}>Proceed to checkout <ArrowRight /></button></div>}
       </aside>
 
-      {accountOpen ? <AccountPage user={customer} csrfToken={csrfToken} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={() => setAccountOpen(false)} onLogout={() => { setCustomer(null); setCsrfToken(""); setAccountOpen(false) }} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
+      {accountOpen ? <AccountPage user={customer} csrfToken={csrfToken} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={() => goTo('stores')} onLogout={() => { setCustomer(null); setCsrfToken(""); setAccountOpen(false) }} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
         <section className="hero hero-slider" id="home" aria-roledescription="carousel" aria-label="Featured Indian craftsmanship" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)} onFocus={() => setHeroPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false) }}>
           <div className="hero-slides">
             {heroSlides.map((slide, index) => <img key={slide.src} className={`hero-image ${index === activeHero ? 'active' : ''}`} src={slide.src} alt={index === activeHero ? slide.alt : ''} aria-hidden={index !== activeHero} />)}
@@ -279,15 +279,10 @@ function App() {
           <div className="solutions-vision"><h3>Our Vision</h3><div><span>Promote Made in India products</span><span>Support unorganised businesses to grow</span><span>Provide an e-commerce sales platform</span><span>Grow sales and customer base</span></div></div>
           <div className="solutions-demo"><div><h3>Book a Demo Today</h3><p>Call / WhatsApp</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
         </section>
-        <section className="story-section" id="about">
-          <div className="story-pattern"><div className="story-medallion"><img src="/industrend-logo.jpg" alt="Indus Trend seal" /></div></div>
-          <div className="story-copy"><span className="kicker">OUR NORTH STAR</span><h2>Not just made in India.<br /><em>Made of India.</em></h2><p>Indus Trend is a bridge between exceptional Indian makers and people around the world who value what is real, rare and responsibly made.</p><p>We seek out work with a distinct voice—objects rooted in place, carried by tradition, and alive with the character of the hands that shaped them.</p><button className="text-btn light" onClick={() => alert('Our complete story is coming soon.')}>Read our story <ArrowRight /></button></div>
-        </section>
-
-        <section className="contact-section" id="contact">
+<section className="contact-section" id="contact">
           <div className="contact-copy"><span className="kicker">WE’D LOVE TO HEAR FROM YOU</span><h2>Contact <em>Us.</em></h2><p>Questions about a piece, a maker, or your order? Our team is here to help.</p>
             <address>
-              <a href="https://www.google.com/maps/search/?api=1&query=Leon+Orbit+B+Wing+Kokane+Chowk+Rahatani+Pune+411017" target="_blank" rel="noreferrer"><span><MapPin /></span><div><b>Visit our studio</b><small>Leon Orbit, B Wing, Kokane Chowk,<br />Rahatani, Pune – 411017</small></div><ArrowRight /></a>
+              <a href="https://www.google.com/maps/search/?api=1&query=Leon+Orbit+B+Wing+Kokane+Chowk+Rahatani+Pune+411017" target="_blank" rel="noreferrer"><span><MapPin /></span><div><b>Office address</b><small>Leon Orbit, B Wing, Kokane Chowk,<br />Rahatani, Pune – 411017</small></div><ArrowRight /></a>
               <a href="tel:+919356419345"><span><Phone /></span><div><b>Call or WhatsApp</b><small>+91 93564 19345</small></div><ArrowRight /></a>
               <a href="mailto:industrendapp@gmail.com"><span><Mail /></span><div><b>Email us</b><small>industrendapp@gmail.com</small></div><ArrowRight /></a>
             </address>
