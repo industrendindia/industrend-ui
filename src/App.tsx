@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, KeyRound, LogOut, Mail, MapPin, Menu, Minus, Phone, Plus, Search, ShoppingBag, UserRound, X } from 'lucide-react'
-import { FaWhatsapp } from 'react-icons/fa'
+import { FaFacebookF, FaInstagram, FaWhatsapp } from 'react-icons/fa'
 import Storefront from './Storefront'
 import AccountPage, { type CustomerSession } from './AccountPage'
 import './storefront.css'
@@ -136,7 +136,8 @@ function App() {
   }
 
   const openStore = (index: number) => { window.location.hash = `store/${index}` }
-  const closeStore = () => { window.location.hash = ''; window.setTimeout(() => document.getElementById('stores')?.scrollIntoView(), 0) }
+  const returnToStores = () => { setAccountOpen(false); setActiveStore(null); setActivePage('home'); window.location.hash = ''; window.setTimeout(() => document.getElementById('stores')?.scrollIntoView({ behavior: 'smooth' }), 0) }
+  const closeStore = returnToStores
 
   const addToCart = (product: { name: string; price: number; image: string }) => {
     setCartItems((items) => {
@@ -174,7 +175,7 @@ function App() {
           <button className="icon-btn menu-button" onClick={() => setMenuOpen(true)} aria-label="Open navigation"><Menu /></button>
           <button className="brand" onClick={() => goTo('home')} aria-label="Indus Trend home">
             <img src="/industrend-logo.jpg" alt="Indus Trend" />
-            <span className="brand-copy"><strong>INDUS TREND</strong><small>SHOP THE SPIRIT OF INDIA.</small></span>
+            <span className="brand-copy"><strong>INDUS TREND</strong><span className="brand-tagline-row"><small>SHOP THE SPIRIT OF INDIA.</small><span className="india-flag-badge" title="Proudly Indian" aria-label="Indian flag"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="6.667" fill="#FF9933"/><rect width="30" height="6.666" y="6.667" fill="#fff"/><rect width="30" height="6.667" y="13.333" fill="#138808"/><g transform="translate(15 10)" stroke="#000080" fill="none"><circle r="2.65" strokeWidth=".55"/><circle r=".42" fill="#000080" stroke="none"/><path d="M15 7.5v5M12.5 10h5M13.23 8.23l3.54 3.54M16.77 8.23l-3.54 3.54" transform="translate(-15 -10)" strokeWidth=".33"/></g></svg></span></span></span>
           </button>
           <form className="header-search" role="search" onSubmit={submitHeaderSearch}>
             <Search aria-hidden="true" />
@@ -211,10 +212,10 @@ function App() {
           {!cartItems.length && <div className="cart-empty"><ShoppingBag /><h3>Your cart is empty</h3><p>Explore artisan-made pieces and add something meaningful.</p><button onClick={() => { setCartOpen(false); goTo('products') }}>Explore products</button></div>}
           {cartItems.map((item) => <article className="cart-line" key={item.name}><img src={item.image} alt="" /><div><h3>{item.name}</h3><b>₹{item.price.toLocaleString('en-IN')}</b><div className="cart-qty"><button onClick={() => changeCartQuantity(item.name, -1)} aria-label={`Reduce ${item.name}`}><Minus /></button><span>{item.qty}</span><button onClick={() => changeCartQuantity(item.name, 1)} aria-label={`Increase ${item.name}`}><Plus /></button></div></div><button className="cart-remove" onClick={() => removeCartItem(item.name)}>Remove</button></article>)}
         </div>
-        {!!cartItems.length && <div className="cart-summary"><div><span>Subtotal</span><strong>₹{cartItems.reduce((total, item) => total + item.price * item.qty, 0).toLocaleString('en-IN')}</strong></div><div><span>Shipping</span><b>FREE</b></div><p>Marketplace protection included</p><button onClick={() => alert('Checkout will be connected to the payment service soon.')}>Proceed to checkout <ArrowRight /></button></div>}
+        {!!cartItems.length && <div className="cart-summary"><div><span>Subtotal</span><strong>₹{cartItems.reduce((total, item) => total + item.price * item.qty, 0).toLocaleString('en-IN')}</strong></div><div><span>Shipping</span><b>FREE</b></div><p>Marketplace protection included</p><div className="cart-summary-actions"><button className="continue-shopping" onClick={() => { setCartOpen(false); returnToStores() }}>Continue Shopping</button><button className="proceed-checkout" onClick={() => alert('Checkout will be connected to the payment service soon.')}>Proceed to checkout <ArrowRight /></button></div></div>}
       </aside>
 
-      {accountOpen ? <AccountPage key={accountView} user={customer} csrfToken={csrfToken} initialStep={accountView} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={() => goTo('stores')} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
+      {accountOpen ? <AccountPage key={accountView} user={customer} csrfToken={csrfToken} initialStep={accountView} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={returnToStores} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
         {activePage === 'home' && <>
         <section className="hero hero-slider" id="home" aria-roledescription="carousel" aria-label="Featured Indian craftsmanship" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)} onFocus={() => setHeroPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false) }}>
           <div className="hero-slides">
@@ -259,8 +260,10 @@ function App() {
 
         <section className="popular-showcase" id="products">
           <div className="popular-head"><span className="popular-kicker">Popular Products</span><h2>Most Loved <em>Indian Finds.</em></h2><p>Discover handcrafted pieces our customers are loving most — authentic products from Indian artisans, makers and heritage stores.</p></div>
-          <div className="popular-grid" aria-label="Popular products coming soon">
-            {['Paintings', 'Stone Art', 'Home Décor', 'Heritage Craft'].map((category) => <article className="popular-card popular-coming" key={category}><div className="popular-image"><span>Coming soon</span></div><div className="popular-body"><small>{category}</small><h3>Product coming soon</h3></div></article>)}
+          <div className="popular-grid" aria-label="Most loved Indian finds">
+            <article className="popular-card"><div className="popular-image"><img src="/popular-royal-garden-painting.jpeg" alt="Traditional Indian royal family garden painting" /><span>Most loved</span></div><div className="popular-body"><small>Traditional Painting</small><h3>Royal Garden Heritage Painting</h3></div></article>
+            <article className="popular-card"><div className="popular-image"><img src="/popular-warli-painting.jpeg" alt="Framed Warli village life painting" /><span>Popular pick</span></div><div className="popular-body"><small>Wall Painting</small><h3>Warli Village Life Painting</h3></div></article>
+            {['Stone Art', 'Heritage Craft'].map((category) => <article className="popular-card popular-coming" key={category}><div className="popular-image"><span>Coming soon</span></div><div className="popular-body"><small>{category}</small><h3>Product coming soon</h3></div></article>)}
           </div>
         </section>
         </>}
@@ -277,7 +280,7 @@ function App() {
           <div className="service-grid">
             {businessServices.map((service) => <article className="service-card" key={service.title}><span>{service.code}</span><div><h4>{service.title}</h4><p>{service.description}</p></div></article>)}
           </div>
-          <article className="whatsapp-solution"><div className="whatsapp-solution-title"><FaWhatsapp /><h3>WhatsApp Business API + AI</h3></div><ol><li>Marketing and transactional messages</li><li>AI WhatsApp salesperson — instant answers to customer questions</li><li>Complete flow from products and orders to payments and support</li></ol><p>24×7 customer service <b>•</b> Faster follow-ups <b>•</b> More sales</p></article>
+          <article className="whatsapp-solution"><div className="whatsapp-solution-title"><div><FaWhatsapp /><h3>WhatsApp Business API + AI</h3></div><nav className="solution-socials" aria-label="Indus Trend social media"><a href="https://www.facebook.com/profile.php?id=61590709949850" target="_blank" rel="noreferrer" aria-label="Indus Trend on Facebook"><FaFacebookF /></a><span aria-label="Instagram link coming soon" title="Instagram link coming soon"><FaInstagram /></span></nav></div><ol><li>Marketing and transactional messages</li><li>AI WhatsApp salesperson — instant answers to customer questions</li><li>Complete flow from products and orders to payments and support</li></ol><p>24×7 customer service <b>•</b> Faster follow-ups <b>•</b> More sales</p></article>
           <div className="solutions-vision"><h3>Our Vision</h3><div><span>Promote Made in India products</span><span>Support unorganised businesses to grow</span><span>Provide an e-commerce sales platform</span><span>Grow sales and customer base</span></div></div>
           <div className="solutions-demo"><div><h3>Book a Demo Today</h3><p>Call / WhatsApp</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
         </section>}

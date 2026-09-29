@@ -11,21 +11,13 @@ const product = (id: string, name: string, category: string, price: number, mrp:
 const rahulProducts: Product[] = [
   product('krishna-radha', 'Krishna & Radha Devotional Artwork', 'Canvas Painting', 4999, 5999, 4.9, 128, 7, 'Mixed-media fine art', '24 × 30 in'),
   product('shivaji', 'Chhatrapati Shivaji Maharaj Portrait', 'Portrait Painting', 5499, 6499, 4.8, 94, 5, 'Fine-art print with handcrafted finish', '24 × 30 in'),
-  product('ganesh-royal-seated', 'Royal Seated Ganesh Idol', 'God Statue Painting', 7499, 8499, 4.9, 42, 3),
-  product('ganesh-turquoise-orange', 'Traditional Turquoise & Orange Ganesh Idol', 'God Statue Painting', 6499, 7499, 4.8, 37, 4),
-  product('ganesh-regal-lotus', 'Regal Lotus Ganesh Idol', 'God Statue Painting', 8999, 9999, 4.9, 31, 2),
-  product('ganesh-pink-lotus', 'Pink Lotus Ganesh Idol', 'God Statue Painting', 6999, 7999, 4.8, 28, 5),
-  product('ganesh-purple-royal-seated', 'Royal Purple Seated Ganesh Idol', 'God Statue Painting', 7299, 8299, 4.8, 19, 3),
-  product('ganesh-jewel-crown', 'Jewel Crown Ganesh Idol', 'God Statue Painting', 5999, 6999, 4.8, 17, 4),
-  product('ganesh-pink-dhoti', 'Pink Dhoti Ganesh Idol', 'God Statue Painting', 6799, 7799, 4.9, 21, 3),
-  product('ganesh-golden-four-arm', 'Golden Four-Arm Ganesh Idol', 'God Statue Painting', 6199, 7199, 4.8, 15, 4),
-  product('ganesh-green-dhoti', 'Green Dhoti Ganesh Idol', 'God Statue Painting', 5899, 6899, 4.8, 18, 5),
-  product('ganesh-pink-lotus-pearl', 'Pearl Lotus Ganesh Idol', 'God Statue Painting', 6399, 7399, 4.9, 16, 3),
-  product('ganesh-orange-pink-lotus', 'Orange & Pink Lotus Ganesh Idol', 'God Statue Painting', 5699, 6699, 4.7, 14, 4),
-  product('ganesh-pink-traditional', 'Traditional Pink Ganesh Idol', 'God Statue Painting', 4999, 5999, 4.7, 13, 6),
+  product('ganesh-royal-seated', 'Royal Seated Ganesh Idol', 'Idols', 899, 1199, 4.9, 42, 3),
+  product('ganesh-turquoise-orange', 'Traditional Turquoise & Orange Ganesh Idol', 'Idols', 1099, 1399, 4.8, 37, 4),
+  product('ganesh-regal-lotus', 'Regal Lotus Ganesh Idol', 'Idols', 1299, 1599, 4.9, 31, 2),
+  product('ganesh-pink-lotus', 'Pink Lotus Ganesh Idol', 'Idols', 1499, 1799, 4.8, 28, 5),
 ]
 
-const rahulCategories = ['All Products', 'Canvas Painting', 'Portrait Painting', 'Landscape Painting', 'Abstract Painting', 'God Statue Painting', 'Wall Painting', 'Mural Painting', 'Name Plate Mural']
+const rahulCategories = ['All Products', 'Customised Your Creations', 'Canvas Painting', 'Portrait Painting', 'Landscape Painting', 'Abstract Painting', 'Idols', 'Wall Painting', 'Mural Painting', 'Name Plate Mural']
 
 const fallbackProducts: Product[] = [product('krishna-radha', 'Artisan Collection', 'All Products', 2850, 3200, 4.8, 24, 6)]
 const money = (value: number) => `₹${value.toLocaleString('en-IN')}`
