@@ -3,11 +3,12 @@ import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Hea
 import { FaFacebookF, FaInstagram, FaWhatsapp } from 'react-icons/fa'
 import Storefront from './Storefront'
 import AccountPage, { type CustomerSession } from './AccountPage'
+import SellerOnboarding from './SellerOnboarding'
 import './storefront.css'
 
 const navItems = [
   ['Home', 'home'],
-  ['Sellers Login', 'seller-login'],
+  ['Seller Onboarding', 'seller-onboarding'],
   ['About Us', 'about'],
   ['Contact Us', 'contact'],
   ['Products & Services', 'services'],
@@ -59,7 +60,7 @@ declare global {
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [activePage, setActivePage] = useState<'home' | 'services'>('home')
+  const [activePage, setActivePage] = useState<'home' | 'services' | 'seller-onboarding'>('home')
   const [selectedLanguage, setSelectedLanguage] = useState('en')
   const [activeHero, setActiveHero] = useState(0)
   const [heroPaused, setHeroPaused] = useState(false)
@@ -123,13 +124,12 @@ function App() {
   }, [])
 
   const goTo = (id: string) => {
-    if (id === 'seller-login') { setMenuOpen(false); return }
-    const nextPage = id === 'services' ? 'services' : 'home'
+    const nextPage = id === 'services' ? 'services' : id === 'seller-onboarding' ? 'seller-onboarding' : 'home'
     setActivePage(nextPage)
     setAccountOpen(false)
     if (activeStore !== null) window.location.hash = ''
     window.setTimeout(() => {
-      if (nextPage === 'services') window.scrollTo({ top: 0, behavior: 'smooth' })
+      if (nextPage === 'services' || nextPage === 'seller-onboarding') window.scrollTo({ top: 0, behavior: 'smooth' })
       else document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
     }, 0)
     setMenuOpen(false)
@@ -284,6 +284,7 @@ function App() {
           <div className="solutions-vision"><h3>Our Vision</h3><div><span>Promote Made in India products</span><span>Support unorganised businesses to grow</span><span>Provide an e-commerce sales platform</span><span>Grow sales and customer base</span></div></div>
           <div className="solutions-demo"><div><h3>Book a Demo Today</h3><p>Call / WhatsApp</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
         </section>}
+        {activePage === 'seller-onboarding' && <SellerOnboarding />}
 {activePage === 'home' && <section className="contact-section" id="contact">
           <div className="contact-copy"><span className="kicker">WE’D LOVE TO HEAR FROM YOU</span><h2>Contact <em>Us.</em></h2><p>Questions about a piece, a maker, or your order? Our team is here to help.</p>
             <address>
