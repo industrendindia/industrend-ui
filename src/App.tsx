@@ -1,14 +1,19 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, KeyRound, LogOut, Mail, MapPin, Menu, Minus, Phone, Plus, Search, ShoppingBag, UserRound, X } from 'lucide-react'
+import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Heart, KeyRound, LogOut, Mail, MapPin, Menu, Minus, Phone, Plus, ReceiptIndianRupee, Search, ShoppingBag, UserRound, X } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaWhatsapp } from 'react-icons/fa'
 import Storefront from './Storefront'
 import AccountPage, { type CustomerSession } from './AccountPage'
 import SellerOnboarding from './SellerOnboarding'
+import AdminPortal from './AdminPortal'
+import MyOrders from './MyOrders'
+import CustomQuoteModal from './CustomQuoteModal'
+import { nowLabel, type CustomQuote } from './customOrderTypes'
 import './storefront.css'
 
 const navItems = [
   ['Home', 'home'],
   ['Seller Onboarding', 'seller-onboarding'],
+  ['Admin Login', 'admin-login'],
   ['About Us', 'about'],
   ['Contact Us', 'contact'],
   ['Products & Services', 'services'],
@@ -23,6 +28,7 @@ const indianLanguages = [
 
 const stores = [
   { name: 'Rahul Sawant', place: '', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
+  { name: 'Prasad Sculpture Studio', place: '', craft: 'Sculptures • Idols • Relief Murals • Custom Art', image: 'store-prasad' },
   { name: 'Mitti & More', place: '', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
   { name: 'Silk Sarees', place: '', craft: 'Silk • Handloom • Heritage Weaves', image: 'store-silk' },
   { name: 'More Makers Soon', place: '', craft: 'A new artisan store is being curated', image: 'store-coming' },
@@ -60,7 +66,7 @@ declare global {
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [activePage, setActivePage] = useState<'home' | 'services' | 'seller-onboarding'>('home')
+  const [activePage, setActivePage] = useState<'home' | 'services' | 'seller-onboarding' | 'admin-login' | 'orders'>('home')
   const [selectedLanguage, setSelectedLanguage] = useState('en')
   const [activeHero, setActiveHero] = useState(0)
   const [heroPaused, setHeroPaused] = useState(false)
@@ -76,6 +82,10 @@ function App() {
   const [accountView, setAccountView] = useState<'profile' | 'pinSetup'>('profile')
   const [customer, setCustomer] = useState<CustomerSession | null>(null)
   const [csrfToken, setCsrfToken] = useState("")
+  const [customQuotes, setCustomQuotes] = useState<CustomQuote[]>(() => {
+    try { return JSON.parse(window.localStorage.getItem('indus-custom-quotes-v1') || '[]') as CustomQuote[] } catch { return [] }
+  })
+  const [quoteProduct, setQuoteProduct] = useState<{ code: string; name: string; image: string } | null>(null)
   const cartCount = cartItems.reduce((total, item) => total + item.qty, 0)
 
   useEffect(() => {
@@ -87,9 +97,11 @@ function App() {
     }).catch(() => undefined)
   }, [])
   useEffect(() => {
-    document.body.style.overflow = menuOpen || cartOpen ? 'hidden' : ''
+    document.body.style.overflow = menuOpen || cartOpen || quoteProduct ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [menuOpen, cartOpen])
+  }, [menuOpen, cartOpen, quoteProduct])
+
+  useEffect(() => { window.localStorage.setItem('indus-custom-quotes-v1', JSON.stringify(customQuotes)) }, [customQuotes])
 
   useEffect(() => {
     setSelectedLanguage(window.localStorage.getItem('indus-language') || 'en')
@@ -124,12 +136,12 @@ function App() {
   }, [])
 
   const goTo = (id: string) => {
-    const nextPage = id === 'services' ? 'services' : id === 'seller-onboarding' ? 'seller-onboarding' : 'home'
+    const nextPage = id === 'services' ? 'services' : id === 'seller-onboarding' ? 'seller-onboarding' : id === 'admin-login' ? 'admin-login' : id === 'orders' ? 'orders' : 'home'
     setActivePage(nextPage)
     setAccountOpen(false)
     if (activeStore !== null) window.location.hash = ''
     window.setTimeout(() => {
-      if (nextPage === 'services' || nextPage === 'seller-onboarding') window.scrollTo({ top: 0, behavior: 'smooth' })
+      if (nextPage !== 'home') window.scrollTo({ top: 0, behavior: 'smooth' })
       else document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
     }, 0)
     setMenuOpen(false)
@@ -148,6 +160,13 @@ function App() {
   }
   const changeCartQuantity = (name: string, change: number) => setCartItems((items) => items.map((item) => item.name === name ? { ...item, qty: Math.max(1, item.qty + change) } : item))
   const removeCartItem = (name: string) => setCartItems((items) => items.filter((item) => item.name !== name))
+  const addCustomQuote = (quote: Omit<CustomQuote, 'id' | 'createdAt' | 'status' | 'notes' | 'history'>) => {
+    const createdAt = nowLabel()
+    const saved: CustomQuote = { ...quote, id: `ENQ-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`, createdAt, status: 'Enquiry received', notes: '', history: [{ label: 'Customised enquiry submitted', at: createdAt, details: `${quote.storeCode} · ${quote.productCode || 'Custom product'}` }] }
+    setCustomQuotes((current) => [saved, ...current])
+    return saved
+  }
+  const updateCustomQuote = (updated: CustomQuote) => setCustomQuotes((current) => current.map((quote) => quote.id === updated.id ? updated : quote))
   const openAccountView = (view: 'profile' | 'pinSetup') => { setAccountView(view); setAccountOpen(true); setAccountMenuOpen(false) }
   const logoutCustomer = async () => {
     try { await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'include', headers: { 'X-CSRF-Token': csrfToken } }) }
@@ -183,6 +202,7 @@ function App() {
             <button type="submit">Search</button>
           </form>          <div className="header-actions">
             <button className="header-utility" onClick={() => goTo("products")}><Heart />Wishlist</button>
+            <button className="header-utility orders-utility" onClick={() => goTo('orders')}><ReceiptIndianRupee />My Orders</button>
             <button className="bag-btn" onClick={() => setCartOpen(true)} aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag /><span className="bag-label">Cart</span><b>{cartCount}</b></button>
             <div className="account-menu-wrap">
               <button className="login-link" onClick={() => customer ? setAccountMenuOpen((open) => !open) : openAccountView('profile')} aria-expanded={customer ? accountMenuOpen : undefined}>{customer?.firstName || 'Login'}</button>
@@ -201,6 +221,7 @@ function App() {
         <img src="/industrend-logo.jpg" alt="" />
         <nav>{navItems.map(([label, id]) => <button key={id} onClick={() => goTo(id)}>{label}<ChevronRight /></button>)}</nav>
         <label className="drawer-language"><Globe2 /><span>Website language</span><select value={selectedLanguage} onChange={(event) => changeLanguage(event.target.value)}>{indianLanguages.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>
+        <button className="drawer-login" onClick={() => { setMenuOpen(false); goTo('orders') }}>My Orders &amp; Quotations</button>
         {customer ? <div className="drawer-account"><strong>{customer.firstName || 'My Account'}</strong><button onClick={() => { setMenuOpen(false); openAccountView('profile') }}><UserRound /> My Profile</button><button onClick={() => { setMenuOpen(false); openAccountView('pinSetup') }}><KeyRound /> Change Login PIN</button><button className="drawer-logout" onClick={() => { setMenuOpen(false); void logoutCustomer() }}><LogOut /> Logout</button></div> : <button className="drawer-login" onClick={() => { setMenuOpen(false); openAccountView('profile') }}>Login to your account</button>}
       </div>
       {menuOpen && <button className="drawer-backdrop" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
@@ -215,7 +236,7 @@ function App() {
         {!!cartItems.length && <div className="cart-summary"><div><span>Subtotal</span><strong>₹{cartItems.reduce((total, item) => total + item.price * item.qty, 0).toLocaleString('en-IN')}</strong></div><div><span>Shipping</span><b>FREE</b></div><p>Marketplace protection included</p><div className="cart-summary-actions"><button className="continue-shopping" onClick={() => { setCartOpen(false); returnToStores() }}>Continue Shopping</button><button className="proceed-checkout" onClick={() => alert('Checkout will be connected to the payment service soon.')}>Proceed to checkout <ArrowRight /></button></div></div>}
       </aside>
 
-      {accountOpen ? <AccountPage key={accountView} user={customer} csrfToken={csrfToken} initialStep={accountView} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={returnToStores} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} /> : <main id="main">
+      {accountOpen ? <AccountPage key={accountView} user={customer} csrfToken={csrfToken} initialStep={accountView} onAuthenticated={(user, csrf) => { setCustomer(user); setCsrfToken(csrf) }} onClose={returnToStores} /> : activeStore !== null ? <Storefront storeIndex={activeStore} onBack={closeStore} onAddToCart={addToCart} onRequestCustomQuote={setQuoteProduct} /> : <main id="main">
         {activePage === 'home' && <>
         <section className="hero hero-slider" id="home" aria-roledescription="carousel" aria-label="Featured Indian craftsmanship" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)} onFocus={() => setHeroPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false) }}>
           <div className="hero-slides">
@@ -249,10 +270,11 @@ function App() {
               <article className="store-card" key={store.name}>
                 <div className={`store-art ${store.image}`}>
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
-                  {index === 1 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
+                  {index === 1 && <img className="store-photo" src="/prasad-product-12.webp" alt="Sahyadri Warriors relief by Prasad Sculpture Studio" />}
+                  {index === 2 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
                   <div className="craft-object" />
                 </div>
-                <div className="store-meta"><div><h3>{store.name}</h3><p className="store-categories">{store.craft}</p>{store.place && <p><MapPin /> {store.place}</p>}</div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
+                <div className="store-meta"><div><small className="store-business-code">S{String(index + 1).padStart(6, '0')}</small><h3>{store.name}</h3><p className="store-categories">{store.craft}</p>{store.place && <p><MapPin /> {store.place}</p>}</div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
               </article>
             ))}
           </div>
@@ -285,6 +307,8 @@ function App() {
           <div className="solutions-demo"><div><h3>Book a Demo Today</h3><p>Call / WhatsApp</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
         </section>}
         {activePage === 'seller-onboarding' && <SellerOnboarding />}
+        {activePage === 'admin-login' && <AdminPortal quotes={customQuotes} onUpdateQuote={updateCustomQuote} />}
+        {activePage === 'orders' && <MyOrders quotes={customQuotes} onUpdateQuote={updateCustomQuote} onBackToStores={returnToStores} />}
 {activePage === 'home' && <section className="contact-section" id="contact">
           <div className="contact-copy"><span className="kicker">WE’D LOVE TO HEAR FROM YOU</span><h2>Contact <em>Us.</em></h2><p>Questions about a piece, a maker, or your order? Our team is here to help.</p>
             <address>
@@ -303,6 +327,7 @@ function App() {
       </footer>
       <a className="whatsapp-float" href="https://wa.me/919356419345?text=Hello%20Indus%20Trend%2C%20I%20would%20like%20to%20know%20more." target="_blank" rel="noreferrer" aria-label="Contact Indus Trend on WhatsApp"><FaWhatsapp /><span>WhatsApp</span></a>
       <div id="google_translate_element" className="google-translate-engine" aria-hidden="true" />
+      {quoteProduct && <CustomQuoteModal product={quoteProduct} onClose={() => setQuoteProduct(null)} onSubmit={addCustomQuote} />}
     </div>
   )
 }
