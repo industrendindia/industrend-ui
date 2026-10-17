@@ -11,8 +11,8 @@ type AdminPortalProps = {
   onUpdateSeller: (seller: SellerApplication) => void
 }
 
-const DEMO_ADMIN_EMAIL = 'admin@industrend.in'
-const DEMO_ADMIN_PASSWORD = 'IndusDemo@2026'
+const DEMO_ADMIN_EMAIL = 'admin.operations@industrend.in'
+const DEMO_ADMIN_PASSWORD = 'gEfgHtDfGmJhhA8nUASUZ7ts!7'
 
 export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSeller }: AdminPortalProps) {
   const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem('indus-admin-demo') === 'active')
@@ -93,7 +93,7 @@ export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSe
   if (!authenticated) return <main className="admin-login-page" id="main">
     <section className="admin-login-card">
       <aside><img src="/industrend-logo.jpg" alt="Indus Trend" /><span>INDUS TREND ADMINISTRATION</span><h1>Secure access for marketplace operations.</h1><p>Review customised enquiries, record customer discussions and publish agreed quotations.</p><ul><li><ShieldCheck /> Separate administrator access</li><li><Phone /> Customer enquiry follow-up</li><li><CheckCircle2 /> Controlled quotation publishing</li></ul></aside>
-      <form onSubmit={login}><LockKeyhole /><span>ADMIN LOGIN</span><h2>Welcome back</h2><p>Use the separate administrator credentials for this prototype dashboard.</p><label>Email Address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="username" /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" /></label>{message && <p className="admin-message">{message}</p>}<button>Login to Admin Dashboard <ArrowRight /></button><div className="admin-demo-credentials"><b>Prototype credentials</b><span>{DEMO_ADMIN_EMAIL}</span><span>{DEMO_ADMIN_PASSWORD}</span></div></form>
+      <form onSubmit={login}><LockKeyhole /><span>ADMIN LOGIN</span><h2>Welcome back</h2><p>Enter your administrator credentials to access marketplace operations.</p><label>Email Address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="username" /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" /></label>{message && <p className="admin-message">{message}</p>}<button>Login to Admin Dashboard <ArrowRight /></button></form>
     </section>
   </main>
 
