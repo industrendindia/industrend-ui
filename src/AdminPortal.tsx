@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { ArrowRight, CheckCircle2, LockKeyhole, LogOut, Phone, RefreshCw, ShieldCheck } from 'lucide-react'
+import { ArrowRight, CheckCircle2, LockKeyhole, LogOut, Phone, RefreshCw, ShieldCheck, Store } from 'lucide-react'
 import { formatMoney, nowLabel, quoteStatusLabel, type CustomQuote } from './customOrderTypes'
+import type { SellerApplication } from './sellerApplicationTypes'
 import './custom-orders.css'
 
 type AdminPortalProps = {
   quotes: CustomQuote[]
   onUpdateQuote: (quote: CustomQuote) => void
+  sellers: SellerApplication[]
+  onUpdateSeller: (seller: SellerApplication) => void
 }
 
 const DEMO_ADMIN_EMAIL = 'admin@industrend.in'
 const DEMO_ADMIN_PASSWORD = 'IndusDemo@2026'
 
-export default function AdminPortal({ quotes, onUpdateQuote }: AdminPortalProps) {
+export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSeller }: AdminPortalProps) {
   const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem('indus-admin-demo') === 'active')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,6 +26,9 @@ export default function AdminPortal({ quotes, onUpdateQuote }: AdminPortalProps)
   const [eta, setEta] = useState('')
   const [validUntil, setValidUntil] = useState('')
   const [terms, setTerms] = useState('')
+  const [sellerView, setSellerView] = useState(false)
+  const [selectedVendor, setSelectedVendor] = useState(sellers[0]?.vendorCode || '')
+  const selectedSeller = sellers.find((seller) => seller.vendorCode === selectedVendor) || sellers[0]
 
   useEffect(() => {
     if (!selected) return
@@ -92,8 +98,14 @@ export default function AdminPortal({ quotes, onUpdateQuote }: AdminPortalProps)
   </main>
 
   return <main className="admin-dashboard" id="main">
-    <header className="admin-dashboard-head"><div><span>INDUS TREND ADMIN</span><h1>Customised Enquiries</h1><p>Select an enquiry, call the customer, agree the final scope and publish the quotation.</p></div><div><button onClick={() => setMessage('Enquiry list refreshed.')}><RefreshCw /> Refresh</button><button onClick={logout}><LogOut /> Logout</button></div></header>
-    <section className="admin-metrics"><article><small>Total Enquiries</small><strong>{quotes.length}</strong></article><article><small>Awaiting Follow-up</small><strong>{quotes.filter((quote) => quote.status === 'Enquiry received').length}</strong></article><article><small>Quotes Sent</small><strong>{quotes.filter((quote) => quote.status === 'Quotation sent').length}</strong></article><article><small>Orders Confirmed</small><strong>{quotes.filter((quote) => quote.status === 'Order confirmed').length}</strong></article></section>
+    <header className="admin-dashboard-head"><div><span>INDUS TREND ADMIN</span><h1>{sellerView ? 'Seller Onboarding' : 'Customised Enquiries'}</h1><p>{sellerView ? 'Review, correct, approve and activate seller applications.' : 'Select an enquiry, call the customer, agree the final scope and publish the quotation.'}</p></div><div><button onClick={() => setSellerView((value) => !value)}><Store /> {sellerView ? 'Customer Enquiries' : 'Seller Onboarding'}</button><button onClick={() => setMessage('Dashboard refreshed.')}><RefreshCw /> Refresh</button><button onClick={logout}><LogOut /> Logout</button></div></header>
+    <section className="admin-metrics"><article><small>Total Enquiries</small><strong>{quotes.length}</strong></article><article><small>Onboarding Stores</small><strong>{sellers.length}</strong></article><article><small>Pending Sellers</small><strong>{sellers.filter((seller) => seller.status === 'Under Review').length}</strong></article><article><small>Active Stores</small><strong>{sellers.filter((seller) => seller.status === 'Active').length}</strong></article></section>
+    {sellerView ? <section className="admin-quote-layout admin-seller-layout">
+      <aside className="admin-enquiry-list"><h2>All Onboarding Stores <b>{sellers.length}</b></h2>{sellers.length ? sellers.map((seller) => <button key={seller.vendorCode} className={selectedSeller?.vendorCode === seller.vendorCode ? 'selected' : ''} onClick={() => setSelectedVendor(seller.vendorCode)}><strong>{seller.contactName}</strong><span>{seller.vendorCode} · {seller.route}</span><small>+91 {seller.mobile} · {seller.state}</small><em>{seller.status}</em></button>) : <div className="admin-empty"><h3>No seller applications yet</h3><p>Submitted onboarding applications will appear here.</p></div>}</aside>
+      <article className="admin-quote-editor">{selectedSeller ? <><div className="admin-customer"><div><strong>{selectedSeller.contactName}</strong><span>{selectedSeller.vendorCode} · {selectedSeller.status}</span></div><a href={`tel:+91${selectedSeller.mobile}`}><Phone /> +91 {selectedSeller.mobile}</a></div><div className="admin-editor-grid seller-admin-fields">
+        <label>Contact Name<input value={selectedSeller.contactName} onChange={(event) => onUpdateSeller({ ...selectedSeller, contactName: event.target.value })} /></label><label>Email<input type="email" value={selectedSeller.email} onChange={(event) => onUpdateSeller({ ...selectedSeller, email: event.target.value })} /></label><label>Primary State<input value={selectedSeller.state} onChange={(event) => onUpdateSeller({ ...selectedSeller, state: event.target.value })} /></label><label>Name as per PAN<input value={selectedSeller.nameAsPan} onChange={(event) => onUpdateSeller({ ...selectedSeller, nameAsPan: event.target.value })} /></label><label>PAN<input value={selectedSeller.pan} onChange={(event) => onUpdateSeller({ ...selectedSeller, pan: event.target.value.toUpperCase() })} /></label><label>Aadhaar<input value={selectedSeller.aadhaar} onChange={(event) => onUpdateSeller({ ...selectedSeller, aadhaar: event.target.value.replace(/\D/g, '').slice(0, 12) })} /></label><label>Name as per Bank<input value={selectedSeller.bankName} onChange={(event) => onUpdateSeller({ ...selectedSeller, bankName: event.target.value })} /></label><label>Bank Account<input value={selectedSeller.bankAccount} onChange={(event) => onUpdateSeller({ ...selectedSeller, bankAccount: event.target.value.replace(/\D/g, '') })} /></label><label>IFSC<input value={selectedSeller.bankIfsc} onChange={(event) => onUpdateSeller({ ...selectedSeller, bankIfsc: event.target.value.toUpperCase() })} /></label><label>Category<input value={selectedSeller.category} onChange={(event) => onUpdateSeller({ ...selectedSeller, category: event.target.value })} /></label>
+      </div><div className="admin-verification-summary"><span className={selectedSeller.panVerified ? 'ok' : ''}>PAN {selectedSeller.panVerified ? 'Verified' : 'Pending'}</span><span className={selectedSeller.aadhaarVerified ? 'ok' : ''}>Aadhaar {selectedSeller.aadhaarVerified ? 'Verified' : 'Pending'}</span><span className={selectedSeller.bankVerified ? 'ok' : ''}>Bank {selectedSeller.bankVerified ? 'Verified' : 'Pending'}</span></div>{message && <p className="admin-message">{message}</p>}<div className="admin-seller-actions"><button className="admin-request-change" onClick={() => setMessage('Request Change will be enabled when seller notifications are connected.')}>Request Change</button><button className="admin-send-quote" disabled={selectedSeller.status === 'Active' || !selectedSeller.kycCompleted} onClick={() => { onUpdateSeller({ ...selectedSeller, status: 'Active', approvedAt: new Date().toISOString() }); setMessage(`${selectedSeller.vendorCode} approved and activated.`) }}>{selectedSeller.status === 'Active' ? 'Store Active' : 'Approve & Activate Store'} <ArrowRight /></button></div></> : <div className="admin-empty"><h3>Select a seller</h3></div>}</article>
+    </section> : <>
     <section className="admin-quote-layout">
       <aside className="admin-enquiry-list"><h2>Enquiry Inbox <b>{quotes.length}</b></h2>{quotes.length ? quotes.map((quote) => <button key={quote.id} className={selected?.id === quote.id ? 'selected' : ''} onClick={() => setSelectedId(quote.id)}><strong>{quote.product}</strong><span>{quote.id} · {quote.customerName}</span><small>+91 {quote.phone} · {quote.city}</small><em>{quoteStatusLabel(quote)}</em></button>) : <div className="admin-empty"><h3>No enquiries yet</h3><p>A customer can submit one from Prasad Sculpture Studio.</p></div>}</aside>
       <article className="admin-quote-editor">{selected ? <>
@@ -108,7 +120,7 @@ export default function AdminPortal({ quotes, onUpdateQuote }: AdminPortalProps)
         <button className="admin-send-quote" onClick={sendQuote} disabled={!!selected.orderId}>{selected.orderId ? 'Order Already Confirmed' : 'Save & Send Final Quotation'} <ArrowRight /></button>
         <div className="admin-history"><h3>Enquiry History</h3>{[...selected.history].reverse().map((item, index) => <div key={`${item.at}-${index}`}><b>{item.label}</b><small>{item.at}{item.details ? ` · ${item.details}` : ''}</small></div>)}</div>
       </> : <div className="admin-empty"><h3>Select an enquiry</h3><p>Customer requirements and quotation tools will appear here.</p></div>}</article>
-    </section>
+    </section></>}
   </main>
 }
 

@@ -8,6 +8,7 @@ import AdminPortal from './AdminPortal'
 import MyOrders from './MyOrders'
 import CustomQuoteModal from './CustomQuoteModal'
 import { nowLabel, type CustomQuote } from './customOrderTypes'
+import { loadSellerApplications, SELLER_STORAGE_KEY, type SellerApplication } from './sellerApplicationTypes'
 import './storefront.css'
 
 const navItems = [
@@ -85,6 +86,7 @@ function App() {
   const [customQuotes, setCustomQuotes] = useState<CustomQuote[]>(() => {
     try { return JSON.parse(window.localStorage.getItem('indus-custom-quotes-v1') || '[]') as CustomQuote[] } catch { return [] }
   })
+  const [sellerApplications, setSellerApplications] = useState<SellerApplication[]>(loadSellerApplications)
   const [quoteProduct, setQuoteProduct] = useState<{ code: string; name: string; image: string } | null>(null)
   const cartCount = cartItems.reduce((total, item) => total + item.qty, 0)
 
@@ -102,6 +104,7 @@ function App() {
   }, [menuOpen, cartOpen, quoteProduct])
 
   useEffect(() => { window.localStorage.setItem('indus-custom-quotes-v1', JSON.stringify(customQuotes)) }, [customQuotes])
+  useEffect(() => { window.localStorage.setItem(SELLER_STORAGE_KEY, JSON.stringify(sellerApplications)) }, [sellerApplications])
 
   useEffect(() => {
     setSelectedLanguage(window.localStorage.getItem('indus-language') || 'en')
@@ -167,6 +170,10 @@ function App() {
     return saved
   }
   const updateCustomQuote = (updated: CustomQuote) => setCustomQuotes((current) => current.map((quote) => quote.id === updated.id ? updated : quote))
+  const saveSellerApplication = (application: SellerApplication) => setSellerApplications((current) => {
+    const exists = current.some((item) => item.vendorCode === application.vendorCode)
+    return exists ? current.map((item) => item.vendorCode === application.vendorCode ? application : item) : [application, ...current]
+  })
   const openAccountView = (view: 'profile' | 'pinSetup') => { setAccountView(view); setAccountOpen(true); setAccountMenuOpen(false) }
   const logoutCustomer = async () => {
     try { await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'include', headers: { 'X-CSRF-Token': csrfToken } }) }
@@ -306,8 +313,8 @@ function App() {
           <div className="solutions-vision"><h3>Our Vision</h3><div><span>Promote Made in India products</span><span>Support unorganised businesses to grow</span><span>Provide an e-commerce sales platform</span><span>Grow sales and customer base</span></div></div>
           <div className="solutions-demo"><div><h3>Book a Demo Today</h3><p>Call / WhatsApp</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
         </section>}
-        {activePage === 'seller-onboarding' && <SellerOnboarding />}
-        {activePage === 'admin-login' && <AdminPortal quotes={customQuotes} onUpdateQuote={updateCustomQuote} />}
+        {activePage === 'seller-onboarding' && <SellerOnboarding applications={sellerApplications} onSave={saveSellerApplication} />}
+        {activePage === 'admin-login' && <AdminPortal quotes={customQuotes} onUpdateQuote={updateCustomQuote} sellers={sellerApplications} onUpdateSeller={saveSellerApplication} />}
         {activePage === 'orders' && <MyOrders quotes={customQuotes} onUpdateQuote={updateCustomQuote} onBackToStores={returnToStores} />}
 {activePage === 'home' && <section className="contact-section" id="contact">
           <div className="contact-copy"><span className="kicker">WE’D LOVE TO HEAR FROM YOU</span><h2>Contact <em>Us.</em></h2><p>Questions about a piece, a maker, or your order? Our team is here to help.</p>
