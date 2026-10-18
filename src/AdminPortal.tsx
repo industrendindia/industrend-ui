@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { ArrowRight, CheckCircle2, LockKeyhole, LogOut, Phone, RefreshCw, ShieldCheck, Store } from 'lucide-react'
+import { FaFacebookF } from 'react-icons/fa'
 import { formatMoney, nowLabel, quoteStatusLabel, type CustomQuote } from './customOrderTypes'
 import type { SellerApplication } from './sellerApplicationTypes'
+import SocialMediaPanel from './SocialMediaPanel'
 import './custom-orders.css'
 
 type AdminPortalProps = {
@@ -11,11 +13,8 @@ type AdminPortalProps = {
   onUpdateSeller: (seller: SellerApplication) => void
 }
 
-const DEMO_ADMIN_EMAIL = 'admin.operations@industrend.in'
-const DEMO_ADMIN_PASSWORD = 'gEfgHtDfGmJhhA8nUASUZ7ts!7'
-
 export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSeller }: AdminPortalProps) {
-  const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem('indus-admin-demo') === 'active')
+  const [authenticated, setAuthenticated] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
@@ -26,9 +25,11 @@ export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSe
   const [eta, setEta] = useState('')
   const [validUntil, setValidUntil] = useState('')
   const [terms, setTerms] = useState('')
-  const [sellerView, setSellerView] = useState(false)
+  const [adminSection, setAdminSection] = useState<'enquiries'|'sellers'|'social'>('enquiries')
   const [selectedVendor, setSelectedVendor] = useState(sellers[0]?.vendorCode || '')
   const selectedSeller = sellers.find((seller) => seller.vendorCode === selectedVendor) || sellers[0]
+
+  useEffect(()=>{fetch('/api/v1/admin-auth/session',{credentials:'include',cache:'no-store'}).then((response)=>setAuthenticated(response.ok)).catch(()=>setAuthenticated(false))},[])
 
   useEffect(() => {
     if (!selected) return
@@ -40,19 +41,14 @@ export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSe
     setTerms(selected.terms || '')
   }, [selected?.id])
 
-  const login = (event: FormEvent) => {
+  const login = async (event: FormEvent) => {
     event.preventDefault()
-    if (email.trim().toLowerCase() !== DEMO_ADMIN_EMAIL || password !== DEMO_ADMIN_PASSWORD) {
-      setMessage('Incorrect admin email or password.')
-      return
-    }
-    sessionStorage.setItem('indus-admin-demo', 'active')
-    setAuthenticated(true)
     setMessage('')
+    try{const response=await fetch('/api/v1/admin-auth/login',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});const body=await response.json().catch(()=>({}));if(!response.ok)throw new Error(body.error||'Incorrect admin email or password.');setAuthenticated(true)}catch(error){setMessage((error as Error).message)}
   }
 
   const logout = () => {
-    sessionStorage.removeItem('indus-admin-demo')
+    void fetch('/api/v1/admin-auth/logout',{method:'POST',credentials:'include'})
     setAuthenticated(false)
     setPassword('')
   }
@@ -98,9 +94,9 @@ export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSe
   </main>
 
   return <main className="admin-dashboard" id="main">
-    <header className="admin-dashboard-head"><div><span>INDUS TREND ADMIN</span><h1>{sellerView ? 'Seller Onboarding' : 'Customised Enquiries'}</h1><p>{sellerView ? 'Review, correct, approve and activate seller applications.' : 'Select an enquiry, call the customer, agree the final scope and publish the quotation.'}</p></div><div><button onClick={() => setSellerView((value) => !value)}><Store /> {sellerView ? 'Customer Enquiries' : 'Seller Onboarding'}</button><button onClick={() => setMessage('Dashboard refreshed.')}><RefreshCw /> Refresh</button><button onClick={logout}><LogOut /> Logout</button></div></header>
+    <header className="admin-dashboard-head"><div><span>INDUS TREND ADMIN</span><h1>{adminSection==='sellers'?'Seller Onboarding':adminSection==='social'?'Social Media Studio':'Customised Enquiries'}</h1><p>{adminSection==='sellers'?'Review, correct, approve and activate seller applications.':adminSection==='social'?'Generate, review and publish Facebook content from one secure workspace.':'Select an enquiry, call the customer, agree the final scope and publish the quotation.'}</p></div><div><button onClick={()=>setAdminSection('enquiries')}><RefreshCw/> Enquiries</button><button onClick={()=>setAdminSection('sellers')}><Store/> Sellers</button><button onClick={()=>setAdminSection('social')}><FaFacebookF/> Social Media</button><button onClick={logout}><LogOut /> Logout</button></div></header>
     <section className="admin-metrics"><article><small>Total Enquiries</small><strong>{quotes.length}</strong></article><article><small>Onboarding Stores</small><strong>{sellers.length}</strong></article><article><small>Pending Sellers</small><strong>{sellers.filter((seller) => seller.status === 'Under Review').length}</strong></article><article><small>Active Stores</small><strong>{sellers.filter((seller) => seller.status === 'Active').length}</strong></article></section>
-    {sellerView ? <section className="admin-quote-layout admin-seller-layout">
+    {adminSection==='social'?<SocialMediaPanel/>:adminSection==='sellers' ? <section className="admin-quote-layout admin-seller-layout">
       <aside className="admin-enquiry-list"><h2>All Onboarding Stores <b>{sellers.length}</b></h2>{sellers.length ? sellers.map((seller) => <button key={seller.vendorCode} className={selectedSeller?.vendorCode === seller.vendorCode ? 'selected' : ''} onClick={() => setSelectedVendor(seller.vendorCode)}><strong>{seller.contactName}</strong><span>{seller.vendorCode} · {seller.route}</span><small>+91 {seller.mobile} · {seller.state}</small><em>{seller.status}</em></button>) : <div className="admin-empty"><h3>No seller applications yet</h3><p>Submitted onboarding applications will appear here.</p></div>}</aside>
       <article className="admin-quote-editor">{selectedSeller ? <><div className="admin-customer"><div><strong>{selectedSeller.contactName}</strong><span>{selectedSeller.vendorCode} · {selectedSeller.status}</span></div><a href={`tel:+91${selectedSeller.mobile}`}><Phone /> +91 {selectedSeller.mobile}</a></div><div className="admin-editor-grid seller-admin-fields">
         <label>Contact Name<input value={selectedSeller.contactName} onChange={(event) => onUpdateSeller({ ...selectedSeller, contactName: event.target.value })} /></label><label>Email<input type="email" value={selectedSeller.email} onChange={(event) => onUpdateSeller({ ...selectedSeller, email: event.target.value })} /></label><label>Primary State<input value={selectedSeller.state} onChange={(event) => onUpdateSeller({ ...selectedSeller, state: event.target.value })} /></label><label>Name as per PAN<input value={selectedSeller.nameAsPan} onChange={(event) => onUpdateSeller({ ...selectedSeller, nameAsPan: event.target.value })} /></label><label>PAN<input value={selectedSeller.pan} onChange={(event) => onUpdateSeller({ ...selectedSeller, pan: event.target.value.toUpperCase() })} /></label><label>Aadhaar<input value={selectedSeller.aadhaar} onChange={(event) => onUpdateSeller({ ...selectedSeller, aadhaar: event.target.value.replace(/\D/g, '').slice(0, 12) })} /></label><label>Name as per Bank<input value={selectedSeller.bankName} onChange={(event) => onUpdateSeller({ ...selectedSeller, bankName: event.target.value })} /></label><label>Bank Account<input value={selectedSeller.bankAccount} onChange={(event) => onUpdateSeller({ ...selectedSeller, bankAccount: event.target.value.replace(/\D/g, '') })} /></label><label>IFSC<input value={selectedSeller.bankIfsc} onChange={(event) => onUpdateSeller({ ...selectedSeller, bankIfsc: event.target.value.toUpperCase() })} /></label><label>Category<input value={selectedSeller.category} onChange={(event) => onUpdateSeller({ ...selectedSeller, category: event.target.value })} /></label>
