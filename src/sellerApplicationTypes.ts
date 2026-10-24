@@ -27,7 +27,10 @@ export type SellerApplication = {
 export const SELLER_STORAGE_KEY = 'indus-seller-applications-v1'
 
 export const loadSellerApplications = (): SellerApplication[] => {
-  try { return JSON.parse(localStorage.getItem(SELLER_STORAGE_KEY) || '[]') as SellerApplication[] } catch { return [] }
+  try {
+    const applications = JSON.parse(localStorage.getItem(SELLER_STORAGE_KEY) || '[]') as SellerApplication[]
+    return applications.map((application) => /^IT_VND_\d+$/.test(application.vendorCode) ? application : { ...application, vendorCode: createVendorCode() })
+  } catch { return [] }
 }
 
 export const createVendorCode = () => {
