@@ -281,7 +281,7 @@ function App() {
                 <div className={`store-art ${store.image}`}>
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
                   {index === 1 && <img className="store-photo" src="/prasad-main-1.jpeg" alt="Prasad Heritage Sculpture Studio" />}
-                  {index === 2 && <img className="store-photo" src="/anita-hero-2.jpeg" alt="Anita handmade decor studio" />}
+                  {index === 2 && <img className="store-photo" src="/anita-hero-1.webp" alt="Anita handmade decor studio" />}
                   {index === 3 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
                   <div className="craft-object" />
                 </div>
