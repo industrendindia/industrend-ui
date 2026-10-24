@@ -32,7 +32,7 @@ const entries: Array<[string, string, string, number, string]> = [
 
 export const anitaProducts: AnitaProduct[] = entries.map(([id, name, category, price, description], index) => ({
   id, code: `P${String(index + 1).padStart(6, '0')}`, name, category, price, mrp: price,
-  rating: 4.8, reviews: 0, stock: 99, image: '/anita-hero-2.jpeg',
+  rating: 4.8, reviews: 0, stock: 99, image: `/${id}.webp`,
   material: 'Handcrafted decorative material', size: 'Dimensions to be confirmed with seller',
   dispatch: 'Seller to confirm before dispatch', description, customisable: true,
 }))
