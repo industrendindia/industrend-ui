@@ -133,7 +133,7 @@ function App() {
   }, [heroPaused])
 
   useEffect(() => {
-    const timer = window.setInterval(() => setStoreSlides((current) => ({ ...current, 1: ((current[1] || 0) + 1) % 2, 2: ((current[2] || 0) + 1) % 3 })), 6000)
+    const timer = window.setInterval(() => setStoreSlides((current) => ({ ...current, 1: ((current[1] || 0) + 1) % 2, 2: ((current[2] || 0) + 1) % 3 })), 5000)
     return () => window.clearInterval(timer)
   }, [])
 
@@ -288,7 +288,7 @@ function App() {
               return <article className="store-card" key={store.name}>
                 <div className={`store-art ${store.image}`}>
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
-                  {slideImages.length > 0 && <><img className="store-photo" src={slideImages[slideIndex]} alt={`${store.name} featured work`} /><div className="store-slider-controls"><button onClick={() => setStoreSlides((current) => ({ ...current, [index]: (slideIndex + slideImages.length - 1) % slideImages.length }))} aria-label="Previous store image">‹</button><button onClick={() => setStoreSlides((current) => ({ ...current, [index]: (slideIndex + 1) % slideImages.length }))} aria-label="Next store image">›</button></div></>}
+                  {slideImages.length > 0 && <img className="store-photo" src={slideImages[slideIndex]} alt={`${store.name} featured work`} />}
                   {index === 3 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
                   <div className="craft-object" />
                 </div>
