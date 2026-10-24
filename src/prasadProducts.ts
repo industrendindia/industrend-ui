@@ -41,7 +41,7 @@ const details = [
   ['Chhatrapati Shivaji Maharaj Royal Throne 3D Mural Sculpture', 'Heritage Art / 3D Mural Sculpture', 120000, '6 × 5 ft', 'Celebrate the grandeur, courage and royal legacy of Chhatrapati Shivaji Maharaj with this magnificent 3D mural sculpture. Featuring Maharaj seated majestically on a royal throne, the artwork showcases intricate carvings, traditional Maratha-inspired architectural designs, majestic lion figures and finely detailed ornamental elements. The rich heritage-inspired finish and impressive three-dimensional craftsmanship make this sculpture an exceptional statement piece for luxury homes, heritage interiors, offices, cultural institutions, hotels and grand entrance areas. Traditional Indian heritage styling in an antique brown / heritage finish. Customisation is available on request, subject to seller confirmation. Suitable for feature walls, luxury interiors, heritage displays and cultural spaces.'],
 ] as const
 
-export const prasadProducts: PrasadProduct[] = details.filter(([name]) => !['Vishnu Lotus Guardian Idol','Vishnu Radiance Wall Shrine'].includes(name)).map(([name, category, price, size, description], index) => ({
+export const prasadProducts: PrasadProduct[] = details.map(([name, category, price, size, description], index) => ({
   id: `prasad-${String(index + 1).padStart(2, '0')}`,
   code: `P${String(index + 7).padStart(6, '0')}`,
   name,

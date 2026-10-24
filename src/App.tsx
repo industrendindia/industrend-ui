@@ -3,7 +3,8 @@ import { ArrowRight, Camera, ChevronDown, ChevronLeft, ChevronRight, Globe2, Hea
 import { FaFacebookF, FaInstagram, FaWhatsapp } from 'react-icons/fa'
 import Storefront from './Storefront'
 import AccountPage, { type CustomerSession } from './AccountPage'
-import SellerOnboarding from './SellerOnboarding'
+import SellerEnquiry from './SellerEnquiry'
+import type { SellerEnquiryRecord } from './SellerEnquiry'
 import AdminPortal from './AdminPortal'
 import MyOrders from './MyOrders'
 import CustomQuoteModal from './CustomQuoteModal'
@@ -29,10 +30,10 @@ const indianLanguages = [
 
 const stores = [
   { name: 'Rahul Sawant', place: '', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
-  { name: 'Prasad Sculpture Studio', place: '', craft: 'Sculptures • Idols • Relief Murals • Custom Art', image: 'store-prasad' },
+  { name: 'Prasad Heritage Sculpture Studio', place: '', craft: 'Sculptures • Idols • Relief Murals • Custom Art', image: 'store-prasad' },
+  { name: 'Anita’s Handmade Decor', place: '', craft: 'Handcraft Decor • Festive decor', image: 'store-anita' },
   { name: 'Mitti & More', place: '', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
   { name: 'Silk Sarees', place: '', craft: 'Silk • Handloom • Heritage Weaves', image: 'store-silk' },
-  { name: 'Anita’s Handmade Decor', place: '', craft: 'Sculptures • Wall Art • Custom Decor', image: 'store-anita' },
 ] as const
 
 const products = [
@@ -87,6 +88,7 @@ function App() {
     try { return JSON.parse(window.localStorage.getItem('indus-custom-quotes-v1') || '[]') as CustomQuote[] } catch { return [] }
   })
   const [sellerApplications, setSellerApplications] = useState<SellerApplication[]>(loadSellerApplications)
+  const [sellerEnquiries, setSellerEnquiries] = useState<SellerEnquiryRecord[]>(() => { try { return JSON.parse(localStorage.getItem('indus-seller-enquiries-v1') || '[]') as SellerEnquiryRecord[] } catch { return [] } })
   const [quoteProduct, setQuoteProduct] = useState<{ code: string; name: string; image: string } | null>(null)
   const cartCount = cartItems.reduce((total, item) => total + item.qty, 0)
 
@@ -105,6 +107,7 @@ function App() {
 
   useEffect(() => { window.localStorage.setItem('indus-custom-quotes-v1', JSON.stringify(customQuotes)) }, [customQuotes])
   useEffect(() => { window.localStorage.setItem(SELLER_STORAGE_KEY, JSON.stringify(sellerApplications)) }, [sellerApplications])
+  useEffect(() => { window.localStorage.setItem('indus-seller-enquiries-v1', JSON.stringify(sellerEnquiries)) }, [sellerEnquiries])
 
   useEffect(() => {
     setSelectedLanguage(window.localStorage.getItem('indus-language') || 'en')
@@ -277,9 +280,9 @@ function App() {
               <article className="store-card" key={store.name}>
                 <div className={`store-art ${store.image}`}>
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
-                  {index === 1 && <img className="store-photo" src="/prasad-product-12.webp" alt="Sahyadri Warriors relief by Prasad Sculpture Studio" />}
-                  {index === 2 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
-                  {index === 4 && <img className="store-photo" src="/anita-hero-2.jpeg" alt="Anita handmade decor studio" />}
+                  {index === 1 && <img className="store-photo" src="/prasad-main-1.jpeg" alt="Prasad Heritage Sculpture Studio" />}
+                  {index === 2 && <img className="store-photo" src="/anita-hero-2.jpeg" alt="Anita handmade decor studio" />}
+                  {index === 3 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
                   <div className="craft-object" />
                 </div>
                 <div className="store-meta"><div><small className="store-business-code">S{String(index + 1).padStart(6, '0')}</small><h3>{store.name}</h3><p className="store-categories">{store.craft}</p>{store.place && <p><MapPin /> {store.place}</p>}</div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
@@ -314,8 +317,8 @@ function App() {
           <div className="solutions-vision"><h3>Our Vision</h3><div><span>Promote Made in India products</span><span>Support unorganised businesses to grow</span><span>Provide an e-commerce sales platform</span><span>Grow sales and customer base</span></div></div>
           <div className="solutions-demo"><div><h3>Book a Demo Today</h3><p>Call / WhatsApp</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
         </section>}
-        {activePage === 'seller-onboarding' && <SellerOnboarding applications={sellerApplications} onSave={saveSellerApplication} />}
-        {activePage === 'admin-login' && <AdminPortal quotes={customQuotes} onUpdateQuote={updateCustomQuote} sellers={sellerApplications} onUpdateSeller={saveSellerApplication} />}
+        {activePage === 'seller-onboarding' && <SellerEnquiry onSubmit={(enquiry) => setSellerEnquiries((items) => [enquiry, ...items])} />}
+        {activePage === 'admin-login' && <AdminPortal quotes={customQuotes} onUpdateQuote={updateCustomQuote} sellers={sellerApplications} onUpdateSeller={saveSellerApplication} sellerEnquiries={sellerEnquiries} />}
         {activePage === 'orders' && <MyOrders quotes={customQuotes} onUpdateQuote={updateCustomQuote} onBackToStores={returnToStores} />}
 {activePage === 'home' && <section className="contact-section" id="contact">
           <div className="contact-copy"><span className="kicker">WE’D LOVE TO HEAR FROM YOU</span><h2>Contact <em>Us.</em></h2><p>Questions about a piece, a maker, or your order? Our team is here to help.</p>

@@ -3,6 +3,8 @@ import { ArrowRight, CheckCircle2, LockKeyhole, LogOut, Phone, RefreshCw, Shield
 import { FaFacebookF } from 'react-icons/fa'
 import { formatMoney, nowLabel, quoteStatusLabel, type CustomQuote } from './customOrderTypes'
 import type { SellerApplication } from './sellerApplicationTypes'
+import SellerOnboarding from './SellerOnboarding'
+import type { SellerEnquiryRecord } from './SellerEnquiry'
 import SocialMediaPanel from './SocialMediaPanel'
 import './custom-orders.css'
 
@@ -11,9 +13,10 @@ type AdminPortalProps = {
   onUpdateQuote: (quote: CustomQuote) => void
   sellers: SellerApplication[]
   onUpdateSeller: (seller: SellerApplication) => void
+  sellerEnquiries?: SellerEnquiryRecord[]
 }
 
-export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSeller }: AdminPortalProps) {
+export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSeller, sellerEnquiries = [] }: AdminPortalProps) {
   const [authenticated, setAuthenticated] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -27,6 +30,7 @@ export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSe
   const [terms, setTerms] = useState('')
   const [adminSection, setAdminSection] = useState<'enquiries'|'sellers'|'social'>('enquiries')
   const [selectedVendor, setSelectedVendor] = useState(sellers[0]?.vendorCode || '')
+  const [sellerView, setSellerView] = useState<'records'|'onboarding'>('records')
   const selectedSeller = sellers.find((seller) => seller.vendorCode === selectedVendor) || sellers[0]
 
   useEffect(()=>{fetch('/api/v1/admin-auth/session',{credentials:'include',cache:'no-store'}).then((response)=>setAuthenticated(response.ok)).catch(()=>setAuthenticated(false))},[])
@@ -94,9 +98,9 @@ export default function AdminPortal({ quotes, onUpdateQuote, sellers, onUpdateSe
   </main>
 
   return <main className="admin-dashboard" id="main">
-    <header className="admin-dashboard-head"><div><span>INDUS TREND ADMIN</span><h1>{adminSection==='sellers'?'Seller Onboarding':adminSection==='social'?'Social Media Studio':'Customised Enquiries'}</h1><p>{adminSection==='sellers'?'Review, correct, approve and activate seller applications.':adminSection==='social'?'Generate, review and publish Facebook content from one secure workspace.':'Select an enquiry, call the customer, agree the final scope and publish the quotation.'}</p></div><div><button onClick={()=>setAdminSection('enquiries')}><RefreshCw/> Enquiries</button><button onClick={()=>setAdminSection('sellers')}><Store/> Sellers</button><button onClick={()=>setAdminSection('social')}><FaFacebookF/> Social Media</button><button onClick={logout}><LogOut /> Logout</button></div></header>
-    <section className="admin-metrics"><article><small>Total Enquiries</small><strong>{quotes.length}</strong></article><article><small>Onboarding Stores</small><strong>{sellers.length}</strong></article><article><small>Pending Sellers</small><strong>{sellers.filter((seller) => seller.status === 'Under Review').length}</strong></article><article><small>Active Stores</small><strong>{sellers.filter((seller) => seller.status === 'Active').length}</strong></article></section>
-    {adminSection==='social'?<SocialMediaPanel/>:adminSection==='sellers' ? <section className="admin-quote-layout admin-seller-layout">
+    <header className="admin-dashboard-head"><div><span>INDUS TREND ADMIN</span><h1>{adminSection==='sellers'?'Seller Onboarding':adminSection==='social'?'Social Media Studio':'Customised Enquiries'}</h1><p>{adminSection==='sellers'?'Review, correct, approve and activate seller applications.':adminSection==='social'?'Generate, review and publish Facebook content from one secure workspace.':'Select an enquiry, call the customer, agree the final scope and publish the quotation.'}</p></div><div><button onClick={()=>setAdminSection('enquiries')}><RefreshCw/> Enquiries</button><button onClick={()=>{setAdminSection('sellers');setSellerView('records')}}><Store/> Sellers</button><button onClick={()=>setSellerView('onboarding')}><Store/> Open onboarding flow</button><button onClick={()=>setAdminSection('social')}><FaFacebookF/> Social Media</button><button onClick={logout}><LogOut /> Logout</button></div></header>
+    <section className="admin-metrics"><article><small>Total Enquiries</small><strong>{quotes.length}</strong></article><article><small>Seller Enquiries</small><strong>{sellerEnquiries.length}</strong></article><article><small>Onboarding Stores</small><strong>{sellers.length}</strong></article><article><small>Active Stores</small><strong>{sellers.filter((seller) => seller.status === 'Active').length}</strong></article></section>
+    {adminSection==='social'?<SocialMediaPanel/>:adminSection==='sellers' && sellerView==='onboarding' ? <SellerOnboarding applications={sellers} onSave={onUpdateSeller} />:adminSection==='sellers' ? <section className="admin-quote-layout admin-seller-layout">
       <aside className="admin-enquiry-list"><h2>All Onboarding Stores <b>{sellers.length}</b></h2>{sellers.length ? sellers.map((seller) => <button key={seller.vendorCode} className={selectedSeller?.vendorCode === seller.vendorCode ? 'selected' : ''} onClick={() => setSelectedVendor(seller.vendorCode)}><strong>{seller.contactName}</strong><span>{seller.vendorCode} · {seller.route}</span><small>+91 {seller.mobile} · {seller.state}</small><em>{seller.status}</em></button>) : <div className="admin-empty"><h3>No seller applications yet</h3><p>Submitted onboarding applications will appear here.</p></div>}</aside>
       <article className="admin-quote-editor">{selectedSeller ? <><div className="admin-customer"><div><strong>{selectedSeller.contactName}</strong><span>{selectedSeller.vendorCode} · {selectedSeller.status}</span></div><a href={`tel:+91${selectedSeller.mobile}`}><Phone /> +91 {selectedSeller.mobile}</a></div><div className="admin-editor-grid seller-admin-fields">
         <label>Contact Name<input value={selectedSeller.contactName} onChange={(event) => onUpdateSeller({ ...selectedSeller, contactName: event.target.value })} /></label><label>Email<input type="email" value={selectedSeller.email} onChange={(event) => onUpdateSeller({ ...selectedSeller, email: event.target.value })} /></label><label>Primary State<input value={selectedSeller.state} onChange={(event) => onUpdateSeller({ ...selectedSeller, state: event.target.value })} /></label><label>Name as per PAN<input value={selectedSeller.nameAsPan} onChange={(event) => onUpdateSeller({ ...selectedSeller, nameAsPan: event.target.value })} /></label><label>PAN<input value={selectedSeller.pan} onChange={(event) => onUpdateSeller({ ...selectedSeller, pan: event.target.value.toUpperCase() })} /></label><label>Aadhaar<input value={selectedSeller.aadhaar} onChange={(event) => onUpdateSeller({ ...selectedSeller, aadhaar: event.target.value.replace(/\D/g, '').slice(0, 12) })} /></label><label>Name as per Bank<input value={selectedSeller.bankName} onChange={(event) => onUpdateSeller({ ...selectedSeller, bankName: event.target.value })} /></label><label>Bank Account<input value={selectedSeller.bankAccount} onChange={(event) => onUpdateSeller({ ...selectedSeller, bankAccount: event.target.value.replace(/\D/g, '') })} /></label><label>IFSC<input value={selectedSeller.bankIfsc} onChange={(event) => onUpdateSeller({ ...selectedSeller, bankIfsc: event.target.value.toUpperCase() })} /></label><label>Category<input value={selectedSeller.category} onChange={(event) => onUpdateSeller({ ...selectedSeller, category: event.target.value })} /></label>

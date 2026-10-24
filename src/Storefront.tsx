@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, ChevronDown, Heart, Minus, Plus, Search, ShieldCheck, ShoppingBag, Sparkles } from 'lucide-react'
 import { prasadProducts } from './prasadProducts'
+import { anitaProducts } from './anitaProducts'
 
 type StorefrontProps = { storeIndex: number; onBack: () => void; onAddToCart: (product: { name: string; price: number; image: string }) => void; onRequestCustomQuote: (product: { code: string; name: string; image: string }) => void }
 type Product = { id: string; code: string; name: string; category: string; price: number; mrp: number; rating: number; reviews: number; stock: number; image: string; material: string; size: string; dispatch: string; description: string; customisable?: boolean }
@@ -27,9 +28,9 @@ const money = (value: number) => `₹${value.toLocaleString('en-IN')}`
 export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestCustomQuote }: StorefrontProps) {
   const isRahul = storeIndex === 0
   const isPrasad = storeIndex === 1
-  const isAnita = storeIndex === 4
-  const products: Product[] = isRahul ? rahulProducts : isPrasad ? prasadProducts : fallbackProducts
-  const storeName = isRahul ? 'Rahul Sawant' : isPrasad ? 'Prasad Sculpture Studio' : storeIndex === 2 ? 'Mitti & More' : storeIndex === 3 ? 'Silk Sarees' : 'Anita’s Handmade Decor'
+  const isAnita = storeIndex === 2
+  const products: Product[] = isRahul ? rahulProducts : isPrasad ? prasadProducts : isAnita ? anitaProducts : fallbackProducts
+  const storeName = isRahul ? 'Rahul Sawant' : isPrasad ? 'Prasad Heritage Sculpture Studio' : isAnita ? 'Anita’s Handmade Decor' : storeIndex === 3 ? 'Mitti & More' : 'Silk Sarees'
   const storeCode = `S${String(storeIndex + 1).padStart(6, '0')}`
   const [category, setCategory] = useState('All Products')
   const [categorySearch, setCategorySearch] = useState('')
@@ -40,7 +41,7 @@ export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestC
   const [saved, setSaved] = useState<string[]>([])
   const [hero, setHero] = useState(0)
   const customisationEnabled = isRahul || isPrasad || isAnita
-  const heroImages = isPrasad ? ['/prasad-main-1.jpeg','/prasad-main-2.jpeg'] : isAnita ? ['/anita-hero-1.jpeg','/anita-hero-2.jpeg'] : [isRahul ? '/store-01-artist.jpeg' : storeIndex === 2 ? '/store-02.jpeg' : '/hero-marble-craft.jpeg']
+  const heroImages = isPrasad ? ['/prasad-main-1.jpeg','/prasad-main-2.jpeg'] : isAnita ? ['/anita-hero-1.jpeg','/anita-hero-2.jpeg'] : [isRahul ? '/store-01-artist.jpeg' : storeIndex === 3 ? '/store-02.jpeg' : '/hero-marble-craft.jpeg']
   useEffect(() => {
     if (heroImages.length < 2) return
     const timer = window.setInterval(() => setHero((current) => (current + 1) % heroImages.length), 5000)
@@ -87,7 +88,7 @@ export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestC
       <section className="catalogue-banner">
         <img src={heroImages[hero]} alt={`${storeName} artisan studio`} />
         {heroImages.length > 1 && <div className="store-hero-controls"><button onClick={() => setHero((hero + heroImages.length - 1) % heroImages.length)} aria-label="Previous store image">‹</button><span>{hero + 1} / {heroImages.length}</span><button onClick={() => setHero((hero + 1) % heroImages.length)} aria-label="Next store image">›</button></div>}
-        <div><span className="storefront-kicker"><Sparkles /> {storeCode} · Featured artisan store</span><h1>{storeName}</h1><p>{isRahul ? 'Paintings • Ganesh Idols • Name Plates • Wall Art' : isPrasad ? 'Sculptures • Idols • Relief Murals • Personalised Art' : 'Hand-thrown pottery and thoughtful objects'}</p></div>
+        <div><span className="storefront-kicker"><Sparkles /> {storeCode} · Featured artisan store</span><h1>{storeName}</h1><p>{isRahul ? 'Paintings • Ganesh Idols • Name Plates • Wall Art' : isPrasad ? 'Sculptures • Idols • Relief Murals • Personalised Art' : isAnita ? 'Handcraft Decor • Festive decor' : storeIndex === 3 ? 'Hand-thrown pottery and thoughtful objects' : 'Silk • Handloom • Heritage Weaves'}</p></div>
       </section>
       <section className="catalogue-promises"><div><ShieldCheck /> Authenticity assured</div><div><Sparkles /> Made by hand</div><div><ShoppingBag /> Thoughtfully packed</div></section>
       <section className="catalogue-section">
