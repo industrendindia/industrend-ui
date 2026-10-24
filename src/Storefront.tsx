@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, ChevronDown, Heart, Minus, Plus, Search, ShieldCheck, ShoppingBag, Sparkles } from 'lucide-react'
 import { prasadProducts } from './prasadProducts'
 
@@ -41,6 +41,11 @@ export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestC
   const [hero, setHero] = useState(0)
   const customisationEnabled = isRahul || isPrasad || isAnita
   const heroImages = isPrasad ? ['/prasad-main-1.jpeg','/prasad-main-2.jpeg'] : isAnita ? ['/anita-hero-1.jpeg','/anita-hero-2.jpeg'] : [isRahul ? '/store-01-artist.jpeg' : storeIndex === 2 ? '/store-02.jpeg' : '/hero-marble-craft.jpeg']
+  useEffect(() => {
+    if (heroImages.length < 2) return
+    const timer = window.setInterval(() => setHero((current) => (current + 1) % heroImages.length), 5000)
+    return () => window.clearInterval(timer)
+  }, [heroImages.length, storeIndex])
 
   const categories = useMemo(() => isRahul ? rahulCategories : ['All Products', ...Array.from(new Set(products.map((item) => item.category).filter((item) => item !== 'All Products')))], [isRahul, products])
   const filteredCategories = categories.filter((item) => item.toLowerCase().includes(categorySearch.toLowerCase()))
