@@ -51,7 +51,7 @@ export const prasadProducts: PrasadProduct[] = details.filter(([name]) => !['Vis
   rating: 4.8,
   reviews: 0,
   stock: 8,
-  image: `/prasad-product-${String(index + 1).padStart(2, '0')}.webp`,
+  image: name === 'Chhatrapati Shivaji Maharaj Royal Throne 3D Mural Sculpture' ? '/prasad-product-22.jpeg' : `/prasad-product-${String(index + 1).padStart(2, '0')}.webp`,
   material: index < 4 || [9, 11, 14, 15, 16].includes(index) ? 'Material and finish confirmed before dispatch' : 'Artwork and finish as photographed — material confirmed by artisan',
   size,
   dispatch: 'Seller to confirm before dispatch',
