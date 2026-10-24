@@ -40,7 +40,7 @@ const details = [
   ['Chhatrapati Shivaji Maharaj Fort Heritage Mural', 'Relief Murals', 60000, '6 × 4 ft', 'A dramatic heritage mural depicting Chhatrapati Shivaji Maharaj against a fort and mountain backdrop.'],
 ] as const
 
-export const prasadProducts: PrasadProduct[] = details.map(([name, category, price, size, description], index) => ({
+export const prasadProducts: PrasadProduct[] = details.filter(([name]) => !['Vishnu Lotus Guardian Idol','Vishnu Radiance Wall Shrine'].includes(name)).map(([name, category, price, size, description], index) => ({
   id: `prasad-${String(index + 1).padStart(2, '0')}`,
   code: `P${String(index + 7).padStart(6, '0')}`,
   name,

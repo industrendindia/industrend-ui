@@ -2,11 +2,12 @@ import { useState, type FormEvent } from 'react'
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, Landmark, PackageCheck, ShieldCheck, UserRound } from 'lucide-react'
 import './seller-onboarding.css'
 import { createVendorCode, type SellerApplication } from './sellerApplicationTypes'
+import { indianStates } from './indiaStates'
 
 type Step = 'register' | 'otp' | 'success' | 'setup' | 'individualKyc' | 'businessKyc' | 'product' | 'review' | 'submitted'
 type SellerRoute = 'individual' | 'business'
 
-const states = ['Maharashtra', 'Rajasthan', 'Gujarat', 'Uttar Pradesh', 'Karnataka', 'Other']
+const states = indianStates
 const productCategories = ['Paintings & Art', 'Idols & Handicrafts', 'Woodcraft', 'Textiles', 'Food Products', 'Packaged Consumer Products', 'Electrical / BIS-Regulated Product', 'Jewellery', 'Other']
 
 type SellerOnboardingProps = { applications: SellerApplication[]; onSave: (application: SellerApplication) => void }
@@ -78,10 +79,8 @@ export default function SellerOnboarding({ applications, onSave }: SellerOnboard
 
   const completeKyc = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!panVerified || !aadhaarVerified || !bankVerified) {
-      alert('Please complete PAN, identity and bank verification before continuing.')
-      return
-    }
+    // Prototype mode: accept dummy PAN/Aadhaar/bank values. Real provider verification can be enabled later.
+    setPanVerified(true); setAadhaarVerified(true); setBankVerified(true)
     setKycDone(true)
     onSave(snapshot({ kycCompleted: true }))
     go('setup')

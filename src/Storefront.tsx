@@ -19,7 +19,7 @@ const rahulProducts: Product[] = [
   product('ganesh-pink-lotus', 'Pink Lotus Ganesh Idol', 'Idols', 1499, 1799, 4.8, 28, 5),
 ]
 
-const rahulCategories = ['All Products', 'Customised Your Creations', 'Canvas Painting', 'Portrait Painting', 'Landscape Painting', 'Abstract Painting', 'Idols', 'Wall Painting', 'Mural Painting', 'Name Plate Mural']
+const rahulCategories = ['All Products', 'Canvas Painting', 'Portrait Painting', 'Landscape Painting', 'Abstract Painting', 'Idols', 'Wall Painting', 'Mural Painting', 'Name Plate Mural']
 
 const fallbackProducts: Product[] = [product('krishna-radha', 'Artisan Collection', 'All Products', 2850, 3200, 4.8, 24, 6)]
 const money = (value: number) => `₹${value.toLocaleString('en-IN')}`
@@ -27,8 +27,9 @@ const money = (value: number) => `₹${value.toLocaleString('en-IN')}`
 export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestCustomQuote }: StorefrontProps) {
   const isRahul = storeIndex === 0
   const isPrasad = storeIndex === 1
+  const isAnita = storeIndex === 4
   const products: Product[] = isRahul ? rahulProducts : isPrasad ? prasadProducts : fallbackProducts
-  const storeName = isRahul ? 'Rahul Sawant' : isPrasad ? 'Prasad Sculpture Studio' : storeIndex === 2 ? 'Mitti & More' : storeIndex === 3 ? 'Silk Sarees' : 'More Makers Soon'
+  const storeName = isRahul ? 'Rahul Sawant' : isPrasad ? 'Prasad Sculpture Studio' : storeIndex === 2 ? 'Mitti & More' : storeIndex === 3 ? 'Silk Sarees' : 'Anita’s Handmade Decor'
   const storeCode = `S${String(storeIndex + 1).padStart(6, '0')}`
   const [category, setCategory] = useState('All Products')
   const [categorySearch, setCategorySearch] = useState('')
@@ -37,6 +38,9 @@ export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestC
   const [selected, setSelected] = useState<Product | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [saved, setSaved] = useState<string[]>([])
+  const [hero, setHero] = useState(0)
+  const customisationEnabled = isRahul || isPrasad || isAnita
+  const heroImages = isPrasad ? ['/prasad-main-1.jpeg','/prasad-main-2.jpeg'] : isAnita ? ['/anita-hero-1.jpeg','/anita-hero-2.jpeg'] : [isRahul ? '/store-01-artist.jpeg' : storeIndex === 2 ? '/store-02.jpeg' : '/hero-marble-craft.jpeg']
 
   const categories = useMemo(() => isRahul ? rahulCategories : ['All Products', ...Array.from(new Set(products.map((item) => item.category).filter((item) => item !== 'All Products')))], [isRahul, products])
   const filteredCategories = categories.filter((item) => item.toLowerCase().includes(categorySearch.toLowerCase()))
@@ -65,7 +69,7 @@ export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestC
           <small>Made / curated in Pune, Maharashtra · {selected.stock} units available</small>
           <div className="quantity-row"><b>Quantity</b><div><button onClick={() => setQuantity((value) => Math.max(1, value - 1))}><Minus /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(selected.stock, value + 1))}><Plus /></button></div><small>{selected.stock} in stock</small></div>
           <div className="detail-actions"><button onClick={() => add(selected)}>Add to Cart</button><button onClick={() => add(selected)}>Buy Now</button></div>
-          {isPrasad && <button className="detail-custom-quote" onClick={() => onRequestCustomQuote({ code: selected.code, name: selected.name, image: selected.image })}>Request Customised Size / Design <ArrowRight /></button>}
+          {customisationEnabled && <button className="detail-custom-quote" onClick={() => onRequestCustomQuote({ code: selected.code, name: selected.name, image: selected.image })}>Request Customised Size / Design <ArrowRight /></button>}
           <div className="detail-seller">Sold by <b>{storeName}</b> · Verified seller on Indus Trend</div>
         </section>
       </div>
@@ -76,12 +80,13 @@ export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestC
     <main className="catalogue-page" id="main">
       <button className="store-back" onClick={onBack}><ArrowLeft /> Back to all stores</button>
       <section className="catalogue-banner">
-        <img src={isRahul ? '/store-01-artist.jpeg' : isPrasad ? '/prasad-product-12.webp' : storeIndex === 2 ? '/store-02.jpeg' : '/hero-marble-craft.jpeg'} alt={`${storeName} artisan studio`} />
+        <img src={heroImages[hero]} alt={`${storeName} artisan studio`} />
+        {heroImages.length > 1 && <div className="store-hero-controls"><button onClick={() => setHero((hero + heroImages.length - 1) % heroImages.length)} aria-label="Previous store image">‹</button><span>{hero + 1} / {heroImages.length}</span><button onClick={() => setHero((hero + 1) % heroImages.length)} aria-label="Next store image">›</button></div>}
         <div><span className="storefront-kicker"><Sparkles /> {storeCode} · Featured artisan store</span><h1>{storeName}</h1><p>{isRahul ? 'Paintings • Ganesh Idols • Name Plates • Wall Art' : isPrasad ? 'Sculptures • Idols • Relief Murals • Personalised Art' : 'Hand-thrown pottery and thoughtful objects'}</p></div>
       </section>
       <section className="catalogue-promises"><div><ShieldCheck /> Authenticity assured</div><div><Sparkles /> Made by hand</div><div><ShoppingBag /> Thoughtfully packed</div></section>
       <section className="catalogue-section">
-        {isPrasad && <div className="custom-studio-intro"><div><span>CUSTOMISED SCULPTURES &amp; ART</span><h3>Need a different size or design?</h3><p>Buy a listed artwork with View &amp; Buy, or share your requirements for a made-to-order idol, portrait, mural or sculpture and receive a quotation after a call.</p></div><button onClick={() => onRequestCustomQuote({ code: '', name: 'Customised Sculpture or Artwork', image: '/prasad-product-12.webp' })}>Request Customised Quotation <ArrowRight /></button></div>}
+        {customisationEnabled && <div className="custom-studio-intro"><div><span>CUSTOMISED ART &amp; DECOR</span><h3>Need a different size or design?</h3><p>Share your requirements for a made-to-order piece and receive a quotation after a call.</p></div><button onClick={() => onRequestCustomQuote({ code: '', name: `Customised ${storeName} artwork`, image: heroImages[hero] })}>Request Customised Quotation <ArrowRight /></button></div>}
         <div className="catalogue-heading"><span>STORE COLLECTION</span><h2>Explore the <em>catalogue.</em></h2><p>Browse every piece, narrow the collection by category, or search for something specific.</p></div>
         <div className="category-strip" aria-label="Product categories">
           {categories.map((item) => { const sample = products.find((entry) => item === 'All Products' || entry.category === item) ?? products[0]; return <button key={item} className={category === item ? 'active' : ''} onClick={() => chooseCategory(item)}><img src={sample.image} alt="" /><span><b>{item}</b><small>{item === 'All Products' ? products.length : products.filter((entry) => entry.category === item).length} products</small></span></button> })}
@@ -100,9 +105,9 @@ export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestC
             </div>
             <div className="catalogue-result-head"><div><h3>{category}</h3><p>{visibleProducts.length} pieces from {storeName}</p></div>{(category !== 'All Products' || productSearch) && <button onClick={() => { setCategory('All Products'); setProductSearch('') }}>Clear filters</button>}</div>
             <div className="catalogue-grid">
-              {visibleProducts.map((item) => <article className={`catalogue-card ${isPrasad ? 'prasad-card' : ''}`} key={item.id}>
+              {visibleProducts.map((item) => <article className={`catalogue-card ${customisationEnabled ? 'customisable-card' : ''}`} key={item.id}>
                 <div className="catalogue-card-media"><img src={item.image} alt={item.name} /><span>{item.category}</span><button className={saved.includes(item.id) ? 'saved' : ''} onClick={() => setSaved((current) => current.includes(item.id) ? current.filter((id) => id !== item.id) : [...current, item.id])} aria-label={`Save ${item.name}`}><Heart fill={saved.includes(item.id) ? 'currentColor' : 'none'} /></button></div>
-                <div className="catalogue-card-body"><small>{storeCode} · {item.code} · {storeName}</small><h3>{item.name}</h3><div className="catalogue-rating"><span>★★★★★</span> {item.rating}{item.reviews ? ` (${item.reviews})` : ''}</div><div className="catalogue-price"><strong>{money(item.price)}</strong>{item.mrp > item.price && <del>{money(item.mrp)}</del>}</div><p>{item.size} · {item.dispatch}</p><div className={`catalogue-card-actions ${isPrasad ? 'with-quote' : ''}`}><button onClick={() => openProduct(item)}>View &amp; buy</button>{isPrasad && <button onClick={() => onRequestCustomQuote({ code: item.code, name: item.name, image: item.image })}>Customise</button>}</div></div>
+                <div className="catalogue-card-body"><small>{storeCode} · {item.code} · {storeName}</small><h3>{item.name}</h3><div className="catalogue-rating"><span>★★★★★</span> {item.rating}{item.reviews ? ` (${item.reviews})` : ''}</div><div className="catalogue-price"><strong>{money(item.price)}</strong>{item.mrp > item.price && <del>{money(item.mrp)}</del>}</div><p>{item.size} · {item.dispatch}</p><div className={`catalogue-card-actions ${customisationEnabled ? 'with-quote' : ''}`}><button onClick={() => openProduct(item)}>View &amp; buy</button>{customisationEnabled && <button onClick={() => onRequestCustomQuote({ code: item.code, name: item.name, image: item.image })}>Customise</button>}</div></div>
               </article>)}
               {!visibleProducts.length && <div className="catalogue-empty"><Search /><h3>No products found</h3><p>Try another category or clear your search.</p><button onClick={() => { setCategory('All Products'); setProductSearch('') }}>Show all products</button></div>}
             </div>

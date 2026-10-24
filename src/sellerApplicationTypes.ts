@@ -31,7 +31,6 @@ export const loadSellerApplications = (): SellerApplication[] => {
 }
 
 export const createVendorCode = () => {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-  const bytes = crypto.getRandomValues(new Uint8Array(8))
-  return `IT_VND_${Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join('')}`
+  const value = crypto.getRandomValues(new Uint32Array(1))[0] % 1000000000
+  return `IT_VND_${String(value).padStart(9, '0')}`
 }

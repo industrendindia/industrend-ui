@@ -13,7 +13,7 @@ import './storefront.css'
 
 const navItems = [
   ['Home', 'home'],
-  ['Seller Onboarding', 'seller-onboarding'],
+  ['Become a seller', 'seller-onboarding'],
   ['Admin Login', 'admin-login'],
   ['About Us', 'about'],
   ['Contact Us', 'contact'],
@@ -32,7 +32,7 @@ const stores = [
   { name: 'Prasad Sculpture Studio', place: '', craft: 'Sculptures • Idols • Relief Murals • Custom Art', image: 'store-prasad' },
   { name: 'Mitti & More', place: '', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
   { name: 'Silk Sarees', place: '', craft: 'Silk • Handloom • Heritage Weaves', image: 'store-silk' },
-  { name: 'More Makers Soon', place: '', craft: 'A new artisan store is being curated', image: 'store-coming' },
+  { name: 'Anita’s Handmade Decor', place: '', craft: 'Sculptures • Wall Art • Custom Decor', image: 'store-anita' },
 ] as const
 
 const products = [
@@ -279,6 +279,7 @@ function App() {
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
                   {index === 1 && <img className="store-photo" src="/prasad-product-12.webp" alt="Sahyadri Warriors relief by Prasad Sculpture Studio" />}
                   {index === 2 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
+                  {index === 4 && <img className="store-photo" src="/anita-hero-2.jpeg" alt="Anita handmade decor studio" />}
                   <div className="craft-object" />
                 </div>
                 <div className="store-meta"><div><small className="store-business-code">S{String(index + 1).padStart(6, '0')}</small><h3>{store.name}</h3><p className="store-categories">{store.craft}</p>{store.place && <p><MapPin /> {store.place}</p>}</div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
