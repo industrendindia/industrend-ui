@@ -288,7 +288,7 @@ function App() {
               return <article className="store-card" key={store.name}>
                 <div className={`store-art ${store.image}`}>
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
-                  {slideImages.length > 0 && <><img className="store-photo" src={slideImages[slideIndex]} alt={`${store.name} featured work`} /><div className="store-slider-controls"><button onClick={() => setStoreSlides((current) => ({ ...current, [index]: (slideIndex + slideImages.length - 1) % slideImages.length }))} aria-label="Previous store image">‹</button><span>{slideIndex + 1} / {slideImages.length}</span><button onClick={() => setStoreSlides((current) => ({ ...current, [index]: (slideIndex + 1) % slideImages.length }))} aria-label="Next store image">›</button></div></>}
+                  {slideImages.length > 0 && <><img className="store-photo" src={slideImages[slideIndex]} alt={`${store.name} featured work`} /><div className="store-slider-controls"><button onClick={() => setStoreSlides((current) => ({ ...current, [index]: (slideIndex + slideImages.length - 1) % slideImages.length }))} aria-label="Previous store image">‹</button><button onClick={() => setStoreSlides((current) => ({ ...current, [index]: (slideIndex + 1) % slideImages.length }))} aria-label="Next store image">›</button></div></>}
                   {index === 3 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
                   <div className="craft-object" />
                 </div>
