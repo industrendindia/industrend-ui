@@ -71,6 +71,7 @@ function App() {
   const [activePage, setActivePage] = useState<'home' | 'services' | 'seller-onboarding' | 'admin-login' | 'orders'>('home')
   const [selectedLanguage, setSelectedLanguage] = useState('en')
   const [activeHero, setActiveHero] = useState(0)
+  const [storeSlides, setStoreSlides] = useState<Record<number, number>>({ 1: 0, 2: 0 })
   const [heroPaused, setHeroPaused] = useState(false)
   const [activeStore, setActiveStore] = useState<number | null>(() => {
     const match = window.location.hash.match(/^#store\/(\d+)$/)
@@ -130,6 +131,11 @@ function App() {
     const timer = window.setInterval(() => setActiveHero((slide) => (slide + 1) % heroSlides.length), 5500)
     return () => window.clearInterval(timer)
   }, [heroPaused])
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setStoreSlides((current) => ({ ...current, 1: ((current[1] || 0) + 1) % 2, 2: ((current[2] || 0) + 1) % 3 })), 6000)
+    return () => window.clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     const syncStoreRoute = () => {
@@ -276,18 +282,19 @@ function App() {
             <div><p>Independent ateliers. Generational workshops. Quiet corners of India where extraordinary things are still made by hand.</p><button className="text-btn" onClick={() => alert('The full stores directory is coming soon.')}>View all stores <ArrowRight /></button></div>
           </div>
           <div className="store-grid">
-            {stores.map((store, index) => (
-              <article className="store-card" key={store.name}>
+            {stores.map((store, index) => {
+              const slideImages = index === 1 ? ['/prasad-main-1.jpeg', '/prasad-main-2.jpeg'] : index === 2 ? ['/anita-hero-1.webp', '/anita-hero-2.webp', '/anita-hero-3.webp'] : []
+              const slideIndex = storeSlides[index] || 0
+              return <article className="store-card" key={store.name}>
                 <div className={`store-art ${store.image}`}>
                   {index === 0 && <img className="store-photo" src="/store-01.jpeg" alt="Rahul Sawant standing beside a hand-painted Buddha relief artwork" />}
-                  {index === 1 && <img className="store-photo" src="/prasad-main-1.jpeg" alt="Prasad Heritage Sculpture Studio" />}
-                  {index === 2 && <img className="store-photo" src="/anita-hero-1.webp" alt="Anita handmade decor studio" />}
+                  {slideImages.length > 0 && <><img className="store-photo" src={slideImages[slideIndex]} alt={`${store.name} featured work`} /><div className="store-slider-controls"><button onClick={() => setStoreSlides((current) => ({ ...current, [index]: (slideIndex + slideImages.length - 1) % slideImages.length }))} aria-label="Previous store image">‹</button><span>{slideIndex + 1} / {slideImages.length}</span><button onClick={() => setStoreSlides((current) => ({ ...current, [index]: (slideIndex + 1) % slideImages.length }))} aria-label="Next store image">›</button></div></>}
                   {index === 3 && <img className="store-photo" src="/store-02.jpeg" alt="Handcrafted pottery by Mitti & More" />}
                   <div className="craft-object" />
                 </div>
                 <div className="store-meta"><div><small className="store-business-code">S{String(index + 1).padStart(6, '0')}</small><h3>{store.name}</h3><p className="store-categories">{store.craft}</p>{store.place && <p><MapPin /> {store.place}</p>}</div><button className="store-visit" onClick={() => openStore(index)} aria-label={`Visit ${store.name}`}>Visit store <ArrowRight /></button></div>
               </article>
-            ))}
+            })}
           </div>
         </section>
 
