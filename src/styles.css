@@ -124,3 +124,6 @@
 .store-business-code{display:block;margin-bottom:3px;color:#a4652f!important;font-size:9px!important;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
  .store-slider-controls{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:5px 9px;border-radius:999px;background:rgba(31,25,21,.72);color:#fffaf0;font-size:10px;z-index:3;backdrop-filter:blur(5px)}.store-slider-controls button{border:0;background:transparent;color:inherit;width:22px;height:22px;padding:0;font-size:20px;line-height:1}.store-slider-controls span{min-width:34px;text-align:center;font-weight:700}
 .stores-section .store-meta>div{height:auto;min-height:126px;overflow:visible}.stores-section .store-meta h3{display:block;overflow:visible}.stores-section .store-meta .store-categories{display:block;overflow:visible}
+.stores-section .store-card{display:flex;flex-direction:column;height:520px}.stores-section .store-art{flex:0 0 245px}.stores-section .store-meta{flex:1}
+@media(max-width:1100px){.stores-section .store-card{height:605px}.stores-section .store-art{flex-basis:330px}}
+@media(max-width:600px){.stores-section .store-card{height:auto}.stores-section .store-art{flex-basis:350px}}
