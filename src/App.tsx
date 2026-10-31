@@ -29,7 +29,7 @@ const indianLanguages = [
 ] as const
 
 const stores = [
-  { name: 'Rahul Sawant', place: '', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
+  { name: 'Rahul Sawant Arts', place: '', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
   { name: 'Prasad Heritage Sculpture Studio', place: '', craft: 'Sculptures • Idols • Relief Murals • Custom Art', image: 'store-prasad' },
   { name: 'Anita’s Handmade Decor', place: '', craft: 'Handcraft Decor • Festive decor', image: 'store-anita' },
   { name: 'Mitti & More', place: '', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
@@ -50,6 +50,8 @@ const businessServices = [
   { code: '4', title: 'AI Calling', description: 'AI telecaller and 24×7 voice agent.' },
   { code: '6', title: 'CRM', description: 'Leads, sales pipeline, team activity and follow-ups.' },
   { code: '7', title: 'ERP', description: 'Sales, purchases, inventory and operations in one system.' },
+  { code: '8', title: 'Facebook & Instagram Marketing', description: 'Creative posts, reels, page support and thoughtfully planned marketing campaigns.' },
+  { code: '9', title: 'Website Designing', description: 'Modern, mobile-friendly websites with products, services, galleries and enquiry forms.' },
 ] as const
 
 const heroSlides = [
@@ -58,6 +60,11 @@ const heroSlides = [
   { src: '/hero-wood-craft.jpeg', alt: 'A collection of richly carved Indian wooden craft' },
   { src: '/hero-painting-craft.jpeg', alt: 'Indian artists creating intricate floral paintings by hand' },
 ] as const
+
+const pageFromHash = (hash: string): 'home' | 'services' | 'seller-onboarding' | 'admin-login' | 'orders' => {
+  const route = hash.replace(/^#/, '').split('/')[0]
+  return route === 'services' || route === 'seller-onboarding' || route === 'admin-login' || route === 'orders' ? route : 'home'
+}
 
 declare global {
   interface Window {
@@ -68,7 +75,7 @@ declare global {
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [activePage, setActivePage] = useState<'home' | 'services' | 'seller-onboarding' | 'admin-login' | 'orders'>('home')
+  const [activePage, setActivePage] = useState<'home' | 'services' | 'seller-onboarding' | 'admin-login' | 'orders'>(() => pageFromHash(window.location.hash))
   const [selectedLanguage, setSelectedLanguage] = useState('en')
   const [activeHero, setActiveHero] = useState(0)
   const [storeSlides, setStoreSlides] = useState<Record<number, number>>({ 1: 0, 2: 0 })
@@ -141,6 +148,7 @@ function App() {
     const syncStoreRoute = () => {
       const match = window.location.hash.match(/^#store\/(\d+)$/)
       setActiveStore(match ? Number(match[1]) : null)
+      setActivePage(pageFromHash(window.location.hash))
       window.scrollTo({ top: 0 })
     }
     window.addEventListener('hashchange', syncStoreRoute)
@@ -151,7 +159,8 @@ function App() {
     const nextPage = id === 'services' ? 'services' : id === 'seller-onboarding' ? 'seller-onboarding' : id === 'admin-login' ? 'admin-login' : id === 'orders' ? 'orders' : 'home'
     setActivePage(nextPage)
     setAccountOpen(false)
-    if (activeStore !== null) window.location.hash = ''
+    if (['services', 'seller-onboarding', 'admin-login', 'orders'].includes(nextPage)) window.location.hash = nextPage
+    else if (activeStore !== null || window.location.hash) window.location.hash = ''
     window.setTimeout(() => {
       if (nextPage !== 'home') window.scrollTo({ top: 0, behavior: 'smooth' })
       else document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })

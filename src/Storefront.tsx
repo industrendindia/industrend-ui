@@ -30,7 +30,7 @@ export default function Storefront({ storeIndex, onBack, onAddToCart, onRequestC
   const isPrasad = storeIndex === 1
   const isAnita = storeIndex === 2
   const products: Product[] = isRahul ? rahulProducts : isPrasad ? prasadProducts : isAnita ? anitaProducts : fallbackProducts
-  const storeName = isRahul ? 'Rahul Sawant' : isPrasad ? 'Prasad Heritage Sculpture Studio' : isAnita ? 'Anita’s Handmade Decor' : storeIndex === 3 ? 'Mitti & More' : 'Silk Sarees'
+  const storeName = isRahul ? 'Rahul Sawant Arts' : isPrasad ? 'Prasad Heritage Sculpture Studio' : isAnita ? 'Anita’s Handmade Decor' : storeIndex === 3 ? 'Mitti & More' : 'Silk Sarees'
   const storeCode = `S${String(storeIndex + 1).padStart(6, '0')}`
   const [category, setCategory] = useState('All Products')
   const [categorySearch, setCategorySearch] = useState('')
