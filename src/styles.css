@@ -127,3 +127,6 @@
 .stores-section .store-card{display:flex;flex-direction:column;height:520px}.stores-section .store-art{flex:0 0 245px}.stores-section .store-meta{flex:1}
 @media(max-width:1100px){.stores-section .store-card{height:605px}.stores-section .store-art{flex-basis:330px}}
 @media(max-width:600px){.stores-section .store-card{height:auto}.stores-section .store-art{flex-basis:350px}}
+.stores-section .store-card{height:470px}.stores-section .store-meta>div{min-height:126px}.stores-section .store-meta h3{min-height:57px}
+@media(max-width:1100px){.stores-section .store-card{height:555px}}
+@media(max-width:600px){.stores-section .store-card{height:auto}.stores-section .store-meta h3{min-height:0}}

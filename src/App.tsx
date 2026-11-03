@@ -29,7 +29,7 @@ const indianLanguages = [
 ] as const
 
 const stores = [
-  { name: 'Rahul Sawant Arts', place: '', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
+  { name: 'Rahul sawant cha Arts and Paintings', place: '', craft: 'Paintings • Idols • Name Plates • Wall Art', image: 'store-pichwai' },
   { name: 'Prasad Heritage Sculpture Studio', place: '', craft: 'Sculptures • Idols • Relief Murals • Custom Art', image: 'store-prasad' },
   { name: 'Anita’s Handmade Decor', place: '', craft: 'Handcraft Decor • Festive decor', image: 'store-anita' },
   { name: 'Mitti & More', place: '', craft: 'Hand-thrown Pottery', image: 'store-pottery' },
