@@ -44,14 +44,15 @@ const products = [
 ] as const
 
 const businessServices = [
-  { code: '1', title: 'Billing', description: 'Fast invoices, payment records and sales reports.' },
-  { code: '2', title: 'Inventory', description: 'Track stock, low-stock items and product sales.' },
-  { code: '3', title: 'Customer Management', description: 'Customer details, purchase history and follow-ups.' },
-  { code: '4', title: 'AI Calling', description: 'AI telecaller and 24×7 voice agent.' },
-  { code: '6', title: 'CRM', description: 'Leads, sales pipeline, team activity and follow-ups.' },
-  { code: '7', title: 'ERP', description: 'Sales, purchases, inventory and operations in one system.' },
-  { code: '8', title: 'Facebook & Instagram Marketing', description: 'Creative posts, reels, page support and thoughtfully planned marketing campaigns.' },
-  { code: '9', title: 'Website Designing', description: 'Modern, mobile-friendly websites with products, services, galleries and enquiry forms.' },
+  { code: '₹', title: 'Billing & Inventory', description: 'Invoices, payments, stock and low-stock control.' },
+  { code: 'CRM', title: 'Customer & CRM', description: 'Leads, purchase history, follow-ups and sales pipeline.' },
+  { code: 'AI', title: 'AI Calling', description: 'AI telecalling and voice-agent workflows for enquiries and follow-ups.' },
+  { code: 'WA', title: 'WhatsApp Business', description: 'Business profile, catalogue, customer enquiries and compliant messaging.' },
+  { code: 'ERP', title: 'ERP', description: 'Sales, purchases, inventory and operations in one system.' },
+  { code: 'SOC', title: 'Facebook & Instagram Marketing', description: 'Show your products to the right audience with standout social creatives and practical marketing campaigns.' },
+  { code: 'WEB', title: 'Website Designing', description: 'Give customers a beautiful, dependable place to discover your brand, services and products.' },
+  { code: 'CRM', title: 'Customer Management', description: 'Keep customer details and follow-ups in view, so busy shop hours do not push important conversations aside.' },
+  { code: 'AI+', title: 'AI & WhatsApp', description: 'Explore AI for routine questions and conversations, allowing your team to focus on customers who need more help.' },
 ] as const
 
 const heroSlides = [
@@ -318,20 +319,20 @@ function App() {
         </>}
 
         {activePage === 'services' && <section className="business-solutions" id="services">
-          <div className="solutions-brand-hero">
-            <img src="/industrend-logo.jpg" alt="Indus Trend" />
-            <div><span>INDUS TREND</span><small>SMART BUSINESS SOLUTIONS</small><i />
-              <h2>Your smart digital<br /><em>business partner</em></h2>
-            </div>
+          <div className="solutions-reference-hero">
+            <span className="solutions-reference-eyebrow">SOFTWARE • MARKETING • WEB DESIGN FOR INDIAN BUSINESSES</span>
+            <h2>Manage smarter.<br />Reach further.<br /><em>Grow your business.</em></h2>
+            <p>From daily billing to your next customer enquiry, Indus Trend brings together business software, WhatsApp Business, Facebook &amp; Instagram marketing, website designing and AI calling—made for Indian shops, artisans and growing businesses.</p>
+            <div className="solutions-reference-actions"><a href="#services-demo">Find your solution <ArrowRight /></a><a href="#services-solutions">View product images <ChevronDown /></a></div>
+            <div className="solutions-reference-trust"><span>✓ Everyday business software</span><span>✓ Digital marketing &amp; websites</span></div>
           </div>
-          <div className="solutions-promise">From Billing to AI Sales — Everything in One Place</div>
-          <div className="solutions-intro"><h3>Simplify and Organise Your Business</h3><p>Useful digital solutions for small, medium and growing businesses</p></div>
+          <div className="solutions-intro"><h3>Explore our solutions</h3><p>Business tools that work. Marketing that connects.</p></div>
           <div className="service-grid">
             {businessServices.map((service) => <article className="service-card" key={service.title}><span>{service.code}</span><div><h4>{service.title}</h4><p>{service.description}</p></div></article>)}
           </div>
-          <article className="whatsapp-solution"><div className="whatsapp-solution-title"><div><FaWhatsapp /><h3>WhatsApp Business API + AI</h3></div><nav className="solution-socials" aria-label="Indus Trend social media"><a href="https://www.facebook.com/profile.php?id=61590709949850" target="_blank" rel="noreferrer" aria-label="Indus Trend on Facebook"><FaFacebookF /></a><span aria-label="Instagram link coming soon" title="Instagram link coming soon"><FaInstagram /></span></nav></div><ol><li>Marketing and transactional messages</li><li>AI WhatsApp salesperson — instant answers to customer questions</li><li>Complete flow from products and orders to payments and support</li></ol><p>24×7 customer service <b>•</b> Faster follow-ups <b>•</b> More sales</p></article>
+          <article className="whatsapp-solution" id="services-solutions"><div className="whatsapp-solution-title"><div><FaWhatsapp /><h3>WhatsApp Business</h3></div><nav className="solution-socials" aria-label="Indus Trend social media"><a href="https://www.facebook.com/profile.php?id=61590709949850" target="_blank" rel="noreferrer" aria-label="Indus Trend on Facebook"><FaFacebookF /></a><span aria-label="Instagram link coming soon" title="Instagram link coming soon"><FaInstagram /></span></nav></div><ol><li>Business profile and catalogue guidance</li><li>Quick replies and customer enquiry handling</li><li>Opt-in-based updates and approved messaging, where applicable</li></ol><p>Build a professional WhatsApp presence where customers can find products and contact your business conveniently.</p></article>
           <div className="solutions-vision"><h3>Our Vision</h3><div><span>Promote Made in India products</span><span>Support unorganised businesses to grow</span><span>Provide an e-commerce sales platform</span><span>Grow sales and customer base</span></div></div>
-          <div className="solutions-demo"><div><h3>Book a Demo Today</h3><p>Call / WhatsApp</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
+          <div className="solutions-demo" id="services-demo"><div><h3>Let’s talk business</h3><p>A smarter way to work starts with a conversation.</p><a href="https://wa.me/919356419345?text=Hi%20Indus%20Trend%2C%20I%20want%20a%20demo%20of%20your%20Business%20Solutions." target="_blank" rel="noreferrer"><FaWhatsapp /> +91 93564 19345</a></div><div><small>VISIT</small><strong>www.industrend.in</strong><span>industrendindia@gmail.com</span><span>Rahatani, Pune</span></div></div>
         </section>}
         {activePage === 'seller-onboarding' && <SellerEnquiry onSubmit={(enquiry) => setSellerEnquiries((items) => [enquiry, ...items])} />}
         {activePage === 'admin-login' && <AdminPortal quotes={customQuotes} onUpdateQuote={updateCustomQuote} sellers={sellerApplications} onUpdateSeller={saveSellerApplication} sellerEnquiries={sellerEnquiries} />}
