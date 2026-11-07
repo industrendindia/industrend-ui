@@ -326,7 +326,16 @@ function App() {
             <div className="solutions-reference-actions"><a href="#services-demo">Find your solution <ArrowRight /></a><a href="#services-solutions">View product images <ChevronDown /></a></div>
             <div className="solutions-reference-trust"><span>✓ Everyday business software</span><span>✓ Digital marketing &amp; websites</span></div>
           </div>
+          <div className="services-workspace" aria-label="Illustrative Indus Trend business workspace">
+            <div className="services-workspace-top"><span>● ● ●</span><small>INDUS TREND / BUSINESS WORKSPACE</small><b>UI concept</b></div>
+            <div className="services-workspace-body"><aside><strong>My workspace</strong><span className="active">▣ Overview</span><span>▤ Billing</span><span>▧ Inventory</span><span>◉ Customers</span><span>⌁ Sales CRM</span><span>✧ AI tools</span></aside><div className="services-dashboard"><small>BUSINESS OVERVIEW</small><h3>A clearer view of your day.</h3><div className="services-metrics"><div><small>TODAY'S SALES</small><strong>₹24,850</strong><small>12 invoices</small></div><div><small>OPEN LEADS</small><strong>18</strong><small>6 to follow up</small></div><div><small>LOW STOCK</small><strong>04</strong><small>ITEMS TO REVIEW</small></div></div><small>Sales activity · sample week</small><div className="services-chart">{[35,57,45,72,64,90,78].map((height,index)=><i key={index} style={{height:`${height}%`}} />)}</div><div className="services-notice">✧ <span><b>Your next step, made clear</b>Review 6 customer follow-ups for today.</span></div></div></div>
+          </div>
           <div className="solutions-intro"><h3>Explore our solutions</h3><p>Business tools that work. Marketing that connects.</p></div>
+          <div className="services-visual-grid">
+            <article><img src="/services-solution-1.jpg" alt="WhatsApp Business customer conversations" /><div><h4>WhatsApp Business</h4><p>Build a professional WhatsApp presence where customers can find products and contact your business conveniently.</p><ul><li>Business profile and catalogue guidance</li><li>Quick replies and customer enquiry handling</li><li>Opt-in-based updates and approved messaging, where applicable</li></ul><b>Explore this solution ↗</b></div></article>
+            <article><img src="/services-solution-2.jpg" alt="AI Calling workspace" /><div><h4>AI Calling</h4><p>Support routine customer conversations when your staff are busy serving customers.</p><ul><li>AI telecaller and voice agent</li><li>Customer enquiry conversations</li><li>Business-specific follow-up call flows</li></ul><b>Explore this solution ↗</b></div></article>
+            <article><img src="/services-solution-3.jpg" alt="Business software workspace" /><div><h4>Business Software</h4><p>Spend less time searching through registers, bills and customer messages.</p><ul><li>Billing and payment records</li><li>Inventory and customer management</li><li>CRM and ERP solutions</li></ul><b>Explore this solution ↗</b></div></article>
+          </div>
           <div className="service-grid">
             {businessServices.map((service) => <article className="service-card" key={service.title}><span>{service.code}</span><div><h4>{service.title}</h4><p>{service.description}</p></div></article>)}
           </div>
